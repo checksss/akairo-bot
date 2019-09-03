@@ -11,7 +11,7 @@ Akairo Bot is a Discord bot that uses the [Discord Akairo](https://github.com/di
 * In .env, please set the AUTHOR field to `329651188641431574`. If you wish to change it, change it to a valid Discord user's ID.
 
 ## Using TSC
-If you want to run a pre-transpiled version of this, navigate to ./dist/ then run `node bot.ts`. Otherwise, you can run `tsc -p ./tsconfig.json`, `cd dist`, then `node bot.js`.
+If you want to run a pre-transpiled version of this, navigate to ./dist/ then run `node bot.js`. Otherwise, you can run `tsc -p ./tsconfig.json`, `cd dist`, then `node bot.js`.
 
 ## Usage
 
