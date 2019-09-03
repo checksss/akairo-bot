@@ -29,6 +29,7 @@
     "simple-youtube-api": "^5.2.1",
     "ts-node": "^8.3.0",
     "typescript": "^3.6.2",
+    "winston": "^3.2.1",
     "ytdl-core-discord": "^1.0.3"
   }
 }
