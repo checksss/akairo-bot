@@ -1,6 +1,5 @@
 import { Listener } from 'discord-akairo';
 import { Guild, GuildChannel, TextChannel, MessageEmbed, Message } from 'discord.js'
-import mongoose from 'mongoose';
 import Settings from '../../structures/models/Settings';
 import { stripIndents } from 'common-tags';
 
