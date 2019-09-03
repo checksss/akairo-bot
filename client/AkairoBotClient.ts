@@ -1,9 +1,8 @@
 import { join } from 'path';
 import { AkairoClient, CommandHandler, InhibitorHandler, ListenerHandler, Flag } from 'discord-akairo';
-import { Util, Message } from 'discord.js';
+import { Message } from 'discord.js';
 import mongoose from 'mongoose';
 import SettingsProvider from '../structures/providers/SettingsProvider';
-import { stripIndents } from 'common-tags';
 require('dotenv').config();
 
 declare module 'discord-akairo' {
