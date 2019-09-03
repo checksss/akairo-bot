@@ -1,0 +1,34 @@
+{
+  "name": "akairo-bot-ts",
+  "version": "1.0.0",
+  "description": "A TypeScript Discord bot",
+  "main": "dist/bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Quentin Wright (wrightq00@gmail.com)",
+  "license": "MIT",
+  "dependencies": {
+    "@types/common-tags": "^1.8.0",
+    "@types/mongodb": "^3.3.1",
+    "@types/mongoose": "^5.5.16",
+    "@types/node": "^12.7.3",
+    "@types/node-emoji": "^1.8.1",
+    "@types/ws": "^6.0.3",
+    "common-tags": "^1.8.0",
+    "discord-akairo": "github:discord-akairo/discord-akairo",
+    "discord.js": "github:discordjs/discord.js",
+    "dotenv": "^8.1.0",
+    "moment": "^2.24.0",
+    "moment-duration-format": "^2.3.2",
+    "mongodb": "^3.3.2",
+    "mongoose": "^5.6.11",
+    "node-emoji": "^1.10.0",
+    "pascal-case": "^2.0.1",
+    "profanities": "^2.11.0",
+    "simple-youtube-api": "^5.2.1",
+    "ts-node": "^8.3.0",
+    "typescript": "^3.6.2",
+    "ytdl-core-discord": "^1.0.3"
+  }
+}

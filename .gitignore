@@ -1,0 +1,9 @@
+# Modules
+node_modules/
+
+# Config
+.env
+.eslintrc.js
+
+# Misc
+*.code-workspace
