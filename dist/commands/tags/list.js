@@ -10,6 +10,7 @@ class TagListCommand extends discord_akairo_1.Command {
             description: {
                 content: 'Lists all server tags.'
             },
+            category: 'tags',
             channel: 'guild',
             clientPermissions: ['EMBED_LINKS'],
             ratelimit: 2,
