@@ -18,6 +18,25 @@ export default class GuildCreateListener extends Listener {
             return c.name === 'general' || c.name === 'chat' || c.name === 'main';
         }).first();
 
+        const updateChannel = this.client.channels.get(await this.client.settings.get('global', 'modLog', ''));
+        const logEmbed = new MessageEmbed()
+            .setColor([135, 235, 75])
+            .setAuthor(guild.name, guild.iconURL()!)
+            .addField('ID', guild.id, true)
+            .addField('Name', guild.name, true)
+            .addField('Owner', guild.owner!.user.tag, true)
+            .addField('Region', guild.region, true)
+            .addField('Channels', guild.channels.size, true)
+            .addField('Members', guild.members.size, true)
+            .addField('Humans', guild.members.filter(m => !m.user!.bot).size, true)
+            .addField('Bots', guild.members.filter(m => m.user!.bot).size, true)
+            .addBlankField(true)
+            .setFooter('Joined Guild')
+            .setTimestamp(Date.now());
+
+        if (updateChannel && updateChannel.type === 'text') (updateChannel as TextChannel).send(logEmbed);
+        
+
         await Settings.create({
             id: guild.id,
             name: guild.name,
