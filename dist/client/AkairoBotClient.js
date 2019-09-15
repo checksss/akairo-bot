@@ -5,8 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = require("path");
 const discord_akairo_1 = require("discord-akairo");
+const discord_js_1 = require("discord.js");
 const mongoose_1 = __importDefault(require("mongoose"));
 const SettingsProvider_1 = __importDefault(require("../structures/providers/SettingsProvider"));
+const Tags_1 = require("../structures/models/Tags");
 require('dotenv').config();
 class AkairoBotClient extends discord_akairo_1.AkairoClient {
     constructor(config) {
@@ -24,8 +26,8 @@ class AkairoBotClient extends discord_akairo_1.AkairoClient {
             defaultCooldown: 3000,
             argumentDefaults: {
                 prompt: {
-                    modifyStart: (_, str) => `${str}\n\nType \`cancel\` to cancel the command.`,
-                    modifyRetry: (_, str) => `${str}\n\nType \`cancel\` to cancel the command.`,
+                    modifyStart: (_, str) => `${str}\nType \`cancel\` to cancel the command.`,
+                    modifyRetry: (_, str) => `${str}\nType \`cancel\` to cancel the command.`,
                     timeout: 'Error: Command timed out',
                     ended: 'Error: Too many attemps',
                     cancel: 'Command cancelled',
@@ -41,7 +43,42 @@ class AkairoBotClient extends discord_akairo_1.AkairoClient {
         this.listenerHandler = new discord_akairo_1.ListenerHandler(this, {
             directory: path_1.join(__dirname, '..', 'listeners')
         });
+        this.commandHandler.resolver.addType('tag', async (message, phrase) => {
+            if (!phrase)
+                return discord_akairo_1.Flag.fail(phrase);
+            phrase = discord_js_1.Util.cleanContent(phrase.toLowerCase(), message);
+            let tag;
+            try {
+                tag = await Tags_1.Tags.findOne({ guild: message.guild.id, name: phrase });
+                if (!tag)
+                    tag = await Tags_1.Tags.findOne({ guild: message.guild.id, aliases: phrase });
+            }
+            catch (_a) { }
+            return tag || discord_akairo_1.Flag.fail(phrase);
+        });
+        this.commandHandler.resolver.addType('existingTag', async (message, phrase) => {
+            if (!phrase)
+                return discord_akairo_1.Flag.fail(phrase);
+            phrase = discord_js_1.Util.cleanContent(phrase, message);
+            let tag;
+            try {
+                tag = await Tags_1.Tags.findOne({ guild: message.guild.id, name: phrase });
+                if (!tag)
+                    tag = await Tags_1.Tags.findOne({ guild: message.guild.id, aliases: phrase });
+            }
+            catch (_a) { }
+            return tag ? discord_akairo_1.Flag.fail(phrase) : phrase;
+        });
+        this.commandHandler.resolver.addType('tagContent', async (message, phrase) => {
+            if (!phrase)
+                phrase = '';
+            phrase = discord_js_1.Util.cleanContent(phrase, message);
+            if (message.attachments.first())
+                phrase += `\n${message.attachments.first().url}`;
+            return phrase || discord_akairo_1.Flag.fail(phrase);
+        });
         this.config = config;
+        this.cache = new discord_js_1.Collection();
     }
     async _init() {
         this.commandHandler.useInhibitorHandler(this.inhibitorHandler);
@@ -61,7 +98,8 @@ class AkairoBotClient extends discord_akairo_1.AkairoClient {
         try {
             await mongoose_1.default.connect(process.env.mongo, {
                 useNewUrlParser: true,
-                useFindAndModify: false
+                useFindAndModify: false,
+                useUnifiedTopology: true
             });
         }
         catch (e) {

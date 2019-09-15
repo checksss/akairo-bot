@@ -29,7 +29,7 @@ export default class GuildCreateListener extends Listener {
             tokenFiltering: true,
             blacklist: [],
             moderators: [guild.owner!.id]
-        }, (err: any): Promise<MessageEmbed | Message> => {
+        }, (err: any): Promise<Message> => {
             if (err) return (guildGeneral as TextChannel).send('There was an error created guild settings.');
 
             const embed = new MessageEmbed()

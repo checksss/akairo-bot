@@ -1,15 +1,17 @@
 import { join } from 'path';
 import { AkairoClient, CommandHandler, InhibitorHandler, ListenerHandler, Flag } from 'discord-akairo';
-import { Message } from 'discord.js';
+import { Message, Util, Collection, Guild, VoiceChannel, TextChannel, DMChannel, VoiceConnection } from 'discord.js';
 import mongoose from 'mongoose';
 import SettingsProvider from '../structures/providers/SettingsProvider';
+import { Tags } from '../structures/models/Tags';
 require('dotenv').config();
 
 declare module 'discord-akairo' {
     interface AkairoClient {
         settings: SettingsProvider,
-        commmandHandler: CommandHandler,
-        config: AkairoBotOptions
+        commandHandler: CommandHandler,
+        config: AkairoBotOptions,
+        cache: Collection<string, Message>
     }
 }
 
@@ -31,8 +33,8 @@ export default class AkairoBotClient extends AkairoClient {
         defaultCooldown: 3000,
         argumentDefaults: {
             prompt: {
-                modifyStart: (_, str): string => `${str}\n\nType \`cancel\` to cancel the command.`,
-                modifyRetry: (_, str): string => `${str}\n\nType \`cancel\` to cancel the command.`,
+                modifyStart: (_, str): string => `${str}\nType \`cancel\` to cancel the command.`,
+                modifyRetry: (_, str): string => `${str}\nType \`cancel\` to cancel the command.`,
                 timeout: 'Error: Command timed out',
                 ended: 'Error: Too many attemps',
                 cancel: 'Command cancelled',
@@ -53,13 +55,52 @@ export default class AkairoBotClient extends AkairoClient {
 
     public config: AkairoBotOptions;
 
+    public invite: string;
+
+    public cache: Collection<string, Message>;
+
     public constructor(config: AkairoBotOptions) {
         super({ ownerID: config.owner }, {
             messageCacheMaxSize: 1000,
             disableEveryone: true
         });
 
+        this.commandHandler.resolver.addType('tag', async (message, phrase): Promise<any> => {
+            if (!phrase) return Flag.fail(phrase);
+            phrase = Util.cleanContent(phrase.toLowerCase(), message);
+
+            let tag; 
+            try {
+                tag = await Tags.findOne({ guild: message.guild!.id, name: phrase });
+                if (!tag) tag = await Tags.findOne({ guild: message.guild!.id, aliases: phrase });
+            } catch {}
+
+            return tag || Flag.fail(phrase);
+        });
+
+        this.commandHandler.resolver.addType('existingTag', async (message, phrase): Promise<any> => {
+            if (!phrase) return Flag.fail(phrase);
+            phrase = Util.cleanContent(phrase, message);
+            let tag;
+            try {
+                tag = await Tags.findOne({ guild: message.guild!.id, name: phrase });
+                if (!tag) tag = await Tags.findOne({ guild: message.guild!.id, aliases: phrase });
+            } catch {}
+
+            return tag ? Flag.fail(phrase) : phrase;
+        });
+
+        this.commandHandler.resolver.addType('tagContent', async (message, phrase): Promise<any> => {
+            if (!phrase) phrase = '';
+            phrase = Util.cleanContent(phrase, message);
+            if (message.attachments.first()) phrase += `\n${message.attachments.first()!.url}`;
+
+            return phrase || Flag.fail(phrase);
+        });
+
         this.config = config;
+
+        this.cache = new Collection<string, Message>();
     }
 
     private async _init(): Promise<void> {
@@ -83,7 +124,8 @@ export default class AkairoBotClient extends AkairoClient {
         try {
             await mongoose.connect(process.env.mongo as string, {
                 useNewUrlParser: true,
-                useFindAndModify: false
+                useFindAndModify: false,
+                useUnifiedTopology: true
             });
         } catch (e) {
             console.log(e);

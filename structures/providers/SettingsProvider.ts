@@ -15,7 +15,7 @@ export default class SettingsProvider extends Provider {
         }
     }
 
-    public async get(guild: any, key: string, defaultValue: any): Promise<any> {
+    public async get(guild: string | Guild, key: string, defaultValue: any): Promise<any> {
         const id: string = this.getGuildId(guild);
         if (this.items.has(id)) {
             const value = this.items.get(id)[key];
@@ -25,7 +25,7 @@ export default class SettingsProvider extends Provider {
         return defaultValue;
     }
 
-    public async set(guild: any, key: string, value: any): Promise<mongoose.Query<mongoose.Document>> {
+    public async set(guild: string | Guild, key: string, value: any): Promise<mongoose.Query<mongoose.Document>> {
         const id: string = this.getGuildId(guild);
         const data: any = this.items.get(id) || {};
         data[key] = value;
@@ -34,7 +34,7 @@ export default class SettingsProvider extends Provider {
         return await Settings.updateOne({ id }, { [key]: value });
     }
 
-    public async delete(guild: any, key: string): Promise<any> {
+    public async delete(guild: string | Guild, key: string): Promise<any> {
         const id: string = this.getGuildId(guild);
         const data: any = this.items.get(id) || {};
         delete data[key];
@@ -42,14 +42,14 @@ export default class SettingsProvider extends Provider {
         return await Settings.updateOne({ id }, { [key]: null });
     }
 
-    public async clear(guild: any): Promise<any> {
+    public async clear(guild: string | Guild): Promise<any> {
         const id: string = this.getGuildId(guild);
         this.items.delete(id);
 
         return await Settings.deleteOne({ id });
     }
 
-    protected getGuildId(guild: any): string {
+    protected getGuildId(guild: string | Guild): string {
         if (guild instanceof Guild) return guild.id;
         if (guild === 'global' || guild === null) return '0';
         if (typeof guild === 'string' && /^\d+$/.test(guild)) return guild;

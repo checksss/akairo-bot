@@ -38,6 +38,11 @@ export default class StatsCommand extends Command {
                 '❯ Library',
                 '[discord.js](https://discord.js.org)[-akairo](https://github.com/1Computer1/discord-akairo)',
                 true)
+            .addField(
+                '❯ Source',
+                '[GitHub](https://github.com/qwright10/akairo-bot-ts)',
+                true
+            )
             .setThumbnail(this.client.user!.displayAvatarURL())
             .setFooter(`© 2019 ${owner.tag}`);
 
