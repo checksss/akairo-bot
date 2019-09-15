@@ -22,11 +22,7 @@
     "moment": "^2.24.0",
     "moment-duration-format": "^2.3.2",
     "mongodb": "^3.3.2",
-<<<<<<< HEAD
-    "mongoose": "^5.7.1",
-=======
     "mongoose": "^5.7.0",
->>>>>>> 746abd90977b6d00b16ed79d99a346c3c747cc0d
     "node-emoji": "^1.10.0",
     "pascal-case": "^2.0.1",
     "profanities": "^2.11.0",
