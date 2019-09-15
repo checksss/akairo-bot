@@ -7,6 +7,4 @@ node_modules/
 
 # Misc
 *.code-workspace
-
-# Custom
-commands/custom/
+TODO
