@@ -1,9 +1,10 @@
 import { Schema, model } from 'mongoose';
+import { GuildMember } from 'discord.js';
 const Settings: Schema = new Schema({
     id: String,
     name: String,
     prefix: String,
-    filterProfanity: String,
+    filterProfanity: Boolean,
     mainChannel: String,
     memberLog: String,
     modLog: String,

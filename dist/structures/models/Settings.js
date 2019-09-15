@@ -5,7 +5,7 @@ const Settings = new mongoose_1.Schema({
     id: String,
     name: String,
     prefix: String,
-    filterProfanity: String,
+    filterProfanity: Boolean,
     mainChannel: String,
     memberLog: String,
     modLog: String,

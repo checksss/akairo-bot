@@ -1,5 +1,5 @@
 import { Listener } from 'discord-akairo';
-import { Guild, GuildChannel, TextChannel, MessageEmbed, Message } from 'discord.js'
+import { Guild, GuildChannel, GuildMember, TextChannel, MessageEmbed, Message } from 'discord.js'
 import Settings from '../../structures/models/Settings';
 import { stripIndents } from 'common-tags';
 
@@ -13,7 +13,10 @@ export default class GuildCreateListener extends Listener {
     }
 
     public async exec(guild: Guild): Promise<void> {
-        if (this.client.settings.items.has(guild.id)) this.client.settings.clear(guild);
+        if (this.client.settings.items.has(guild.id)) {
+            await this.client.settings.clear(guild);
+            await Settings.deleteOne({ guild: guild.id });
+        }
         const guildGeneral: GuildChannel | undefined = guild.channels.filter(c => c.type === 'text').filter(c => {
             return c.name === 'general' || c.name === 'chat' || c.name === 'main';
         }).first();
@@ -49,7 +52,7 @@ export default class GuildCreateListener extends Listener {
             blacklist: [],
             moderators: [guild.owner!.id]
         }, (err: any): Promise<Message> => {
-            if (err) return (guildGeneral as TextChannel).send('There was an error created guild settings.');
+            if (err) return (guildGeneral as TextChannel).send('The guild settings couldn\'t be created.');
 
             const embed = new MessageEmbed()
                 .setColor([155, 200, 200])

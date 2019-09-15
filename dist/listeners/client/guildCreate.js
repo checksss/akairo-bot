@@ -16,8 +16,10 @@ class GuildCreateListener extends discord_akairo_1.Listener {
         });
     }
     async exec(guild) {
-        if (this.client.settings.items.has(guild.id))
-            this.client.settings.clear(guild);
+        if (this.client.settings.items.has(guild.id)) {
+            await this.client.settings.clear(guild);
+            await Settings_1.default.deleteOne({ guild: guild.id });
+        }
         const guildGeneral = guild.channels.filter(c => c.type === 'text').filter(c => {
             return c.name === 'general' || c.name === 'chat' || c.name === 'main';
         }).first();
@@ -51,7 +53,7 @@ class GuildCreateListener extends discord_akairo_1.Listener {
             moderators: [guild.owner.id]
         }, (err) => {
             if (err)
-                return guildGeneral.send('There was an error created guild settings.');
+                return guildGeneral.send('The guild settings couldn\'t be created.');
             const embed = new discord_js_1.MessageEmbed()
                 .setColor([155, 200, 200])
                 .setAuthor(this.client.user.tag, this.client.user.displayAvatarURL())
