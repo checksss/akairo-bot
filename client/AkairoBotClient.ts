@@ -55,8 +55,6 @@ export default class AkairoBotClient extends AkairoClient {
 
     public config: AkairoBotOptions;
 
-    public invite: string;
-
     public cache: Collection<string, Message>;
 
     public constructor(config: AkairoBotOptions) {
