@@ -10,10 +10,6 @@ class MessageListener extends discord_akairo_1.Listener {
         });
     }
     async exec(message) {
-        const moderators = await this.client.settings.get(message.guild, 'moderators', [message.guild.owner.id]);
-        const inviteReg = /(https?:\/\/)?(www\.)?(discord\.(gg|io|me|li)|discordapp\.com\/invite)\/.+[a-z]/gi;
-        if (inviteReg.test(message.content) && !moderators.includes(message.author.id))
-            message.delete();
         this.client.cache.set(message.id, message);
     }
 }
