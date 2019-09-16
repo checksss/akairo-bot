@@ -32,6 +32,7 @@ export default class StatsCommand extends Command {
                 stripIndents`
                 • Guilds: ${this.client.guilds.size}
                 • Channels: ${this.client.channels.size}
+                • Users: ${this.client.users.filter(u => !u.bot).size}
             `, true)
             .addField('❯ Version', `v${version}`, true)
             .addField(
@@ -39,8 +40,8 @@ export default class StatsCommand extends Command {
                 '[discord.js](https://discord.js.org)[-akairo](https://github.com/1Computer1/discord-akairo)',
                 true)
             .addField(
-                '❯ Source',
-                '[GitHub](https://github.com/qwright10/akairo-bot-ts)',
+                '❯ Invite',
+                '[Discord](https://discordapp.com/api/oauth2/authorize?client_id=586995575686168595&permissions=8&scope=bot)',
                 true
             )
             .setThumbnail(this.client.user!.displayAvatarURL())

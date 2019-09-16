@@ -11,6 +11,7 @@ export default class GuildMemberAddListener extends Listener {
     }
 
     public async exec(member: GuildMember): Promise<Message | Message[] | void> {
+        if (member.user.id === this.client.user!.id) return;
         let memberLog = member.guild.channels.get(await this.client.settings.get(member.guild, 'memberLog', ''));
         if (!memberLog && memberLog!.type !== 'text') return;
 

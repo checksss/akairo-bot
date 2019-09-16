@@ -11,6 +11,8 @@ class GuildMemberAddListener extends discord_akairo_1.Listener {
         });
     }
     async exec(member) {
+        if (member.user.id === this.client.user.id)
+            return;
         let memberLog = member.guild.channels.get(await this.client.settings.get(member.guild, 'memberLog', ''));
         if (!memberLog && memberLog.type !== 'text')
             return;
