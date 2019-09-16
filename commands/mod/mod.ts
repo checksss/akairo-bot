@@ -1,4 +1,4 @@
-import { Command } from 'discord-akairo';
+import { Command, PrefixSupplier } from 'discord-akairo';
 import { Message, GuildMember } from 'discord.js';
 import { stripIndents } from 'common-tags';
 
@@ -61,7 +61,10 @@ export default class ModCommand extends Command {
 
             return message.util!.send(`${member} is no longer a moderator.`);
         } else {
-            return message.util!.send('.');
+            const prefix = await (this.handler.prefix as PrefixSupplier)(message);
+            return message.util!.send(stripIndents`
+            That method doesn't exist on \`mod\`;
+            Try \`${prefix}help mod\` for help.`);
         }
     }
 }

@@ -10,7 +10,7 @@ class MessageReactionAddListener extends discord_akairo_1.Listener {
         });
     }
     async exec(reaction, user) {
-        if (reaction.emoji.name !== '🗑')
+        if (reaction.emoji.name !== '🗑' || user.bot)
             return;
         if (reaction.message.createdTimestamp - Date.now() > 1209.6e6 || !reaction.message.deletable)
             return;

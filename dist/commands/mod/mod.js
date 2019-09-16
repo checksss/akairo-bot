@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_akairo_1 = require("discord-akairo");
+const common_tags_1 = require("common-tags");
 class ModCommand extends discord_akairo_1.Command {
     constructor() {
         super('mod', {
@@ -64,7 +65,10 @@ class ModCommand extends discord_akairo_1.Command {
             return message.util.send(`${member} is no longer a moderator.`);
         }
         else {
-            return message.util.send('.');
+            const prefix = await this.handler.prefix(message);
+            return message.util.send(common_tags_1.stripIndents `
+            That method doesn't exist on \`mod\`;
+            Try \`${prefix}help mod\` for help.`);
         }
     }
 }
