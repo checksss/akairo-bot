@@ -49,7 +49,7 @@ Akairo Bot is up almost 100% of the time and numerous updates to performance and
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 ## Invite
-[**Discord**](https://discordapp.com/api/oauth2/authorize?client_id=586995575686168595&permissions=8&scope=bot)
+[**Discord**](https://discordapp.com/api/oauth2/authorize?client_id=586995575686168595&permissions=8&redirect_uri=https%3A%2F%2Fgithub.com%2Fqwright10%2Fakairo-bot&scope=bot)
 
 ### Unlicensed
 ***This bot is unlicensed and, therefore, cannot be copied, modified, redistributed, or sold in any way, shape, or form.***
