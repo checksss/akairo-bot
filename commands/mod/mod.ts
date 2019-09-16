@@ -25,8 +25,8 @@ export default class ModCommand extends Command {
                     id: 'member',
                     type: 'member',
                     prompt: {
-                        start: (message: Message): string => `${message.author}, who would you like to make a moderator?`,
-                        retry: (message: Message): string => `${message.author}, please provide a valid moderator.`
+                        start: (message: Message): string => `${message.author}, who would you like to remove/make a moderator?`,
+                        retry: (message: Message): string => `${message.author}, please provide a valid member.`
                     }
                 }
             ]

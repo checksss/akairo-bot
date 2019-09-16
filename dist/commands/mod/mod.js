@@ -25,8 +25,8 @@ class ModCommand extends discord_akairo_1.Command {
                     id: 'member',
                     type: 'member',
                     prompt: {
-                        start: (message) => `${message.author}, who would you like to make a moderator?`,
-                        retry: (message) => `${message.author}, please provide a valid moderator.`
+                        start: (message) => `${message.author}, who would you like to remove/make a moderator?`,
+                        retry: (message) => `${message.author}, please provide a valid member.`
                     }
                 }
             ]
