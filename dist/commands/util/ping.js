@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_akairo_1 = require("discord-akairo");
-const common_tags_1 = require("common-tags");
+const discord_js_1 = require("discord.js");
 class PingCommand extends discord_akairo_1.Command {
     constructor() {
         super('ping', {
@@ -14,12 +14,14 @@ class PingCommand extends discord_akairo_1.Command {
         });
     }
     async exec(message) {
-        const m = await message.channel.send('Pinging...');
-        return m.edit(common_tags_1.stripIndents `
-            Ping: \`$(ping)ms\`
-            Heartbeat: \`$(heartbeat)ms\``
-            .replace('$(ping)', ((m.editedTimestamp || m.createdTimestamp) - (message.editedTimestamp || message.createdTimestamp)).toString())
-            .replace('$(heartbeat)', Math.round(this.client.ws.ping).toString()));
+        const embed1 = new discord_js_1.MessageEmbed().setColor([155, 200, 200]).setDescription('Pinging...');
+        const m = await message.util.send(embed1);
+        const embed = new discord_js_1.MessageEmbed()
+            .setColor([155, 200, 200])
+            // @ts-ignore
+            .setDescription(`🏓 **${Math.round(this.client.ws.ping).toString()}**ms`);
+        // @ts-ignore
+        return m.edit(embed);
     }
 }
 exports.default = PingCommand;

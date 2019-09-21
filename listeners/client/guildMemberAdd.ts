@@ -12,7 +12,7 @@ export default class GuildMemberAddListener extends Listener {
 
     public async exec(member: GuildMember): Promise<Message | Message[] | void> {
         let memberLog = member.guild.channels.get(await this.client.settings.get(member.guild, 'memberLog', ''));
-        if (!memberLog && memberLog!.type !== 'text') return;
+        if (!memberLog || memberLog!.type !== 'text') return;
 
         const embed = new MessageEmbed()
             .setColor([135, 235, 75])

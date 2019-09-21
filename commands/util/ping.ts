@@ -1,6 +1,5 @@
 import { Command } from 'discord-akairo';
-import { Message } from 'discord.js';
-import { stripIndents } from 'common-tags';
+import { Message, MessageEmbed } from 'discord.js';
 
 export default class PingCommand extends Command {
     public constructor() {
@@ -15,13 +14,14 @@ export default class PingCommand extends Command {
     }
 
     public async exec(message: Message): Promise<Message> {
-        const m: Message | Message[] = await message.channel.send('Pinging...');
+        const embed1 = new MessageEmbed().setColor([155, 200, 200]).setDescription('Pinging...');
+        const m = await message.util!.send(embed1);
+        const embed = new MessageEmbed()
+            .setColor([155, 200, 200])
+            // @ts-ignore
+            .setDescription(`🏓 **${Math.round(this.client.ws.ping).toString()}**ms`);
 
-        return m.edit(stripIndents`
-            Ping: \`$(ping)ms\`
-            Heartbeat: \`$(heartbeat)ms\``
-            .replace('$(ping)', ((m.editedTimestamp || m.createdTimestamp) - (message.editedTimestamp || message.createdTimestamp)).toString())
-            .replace('$(heartbeat)', Math.round(this.client.ws.ping).toString())
-        );
+        // @ts-ignore
+        return m.edit(embed);
     }
 }

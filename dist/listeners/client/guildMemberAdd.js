@@ -12,7 +12,7 @@ class GuildMemberAddListener extends discord_akairo_1.Listener {
     }
     async exec(member) {
         let memberLog = member.guild.channels.get(await this.client.settings.get(member.guild, 'memberLog', ''));
-        if (!memberLog && memberLog.type !== 'text')
+        if (!memberLog || memberLog.type !== 'text')
             return;
         const embed = new discord_js_1.MessageEmbed()
             .setColor([135, 235, 75])

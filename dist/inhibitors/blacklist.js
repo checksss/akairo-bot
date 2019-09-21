@@ -8,8 +8,10 @@ class BlacklistInhibitor extends discord_akairo_1.Inhibitor {
         });
     }
     async exec(message) {
-        const guildBlacklist = await this.client.settings.get(message.guild, 'blacklist', false);
-        const globalBlacklist = await this.client.settings.get('global', 'blacklist', false);
+        const guildBlacklist = await this.client.settings.get(message.guild, 'blacklist', []);
+        const globalBlacklist = await this.client.settings.get('global', 'blacklist', []);
+        if (!guildBlacklist || !globalBlacklist)
+            return false;
         return guildBlacklist.includes(message.author.id) || globalBlacklist.includes(message.author.id);
     }
 }

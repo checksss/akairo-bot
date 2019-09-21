@@ -2,10 +2,10 @@ import { Command, PrefixSupplier } from 'discord-akairo';
 import { Message, TextChannel } from 'discord.js';
 import { stripIndents } from 'common-tags';
 
-export default class MemberLogChannelCommand extends Command {
+export default class AuditLogChannelCommand extends Command {
     public constructor() {
-        super('memberLog', {
-            aliases: ['memberLog'],
+        super('auditLog', {
+            aliases: ['auditLog'],
             description: {
                 content: stripIndents`Available methods:
                  • get
@@ -16,7 +16,7 @@ export default class MemberLogChannelCommand extends Command {
                 examples: [
                     'get',
                     'set',
-                    'set #welcome',
+                    'set #stats',
                     'set 584443374283653171',
                     'clear'
                 ]
@@ -25,6 +25,7 @@ export default class MemberLogChannelCommand extends Command {
             ratelimit: 2,
             channel: 'guild',
             userPermissions: ['MANAGE_GUILD'],
+            ownerOnly: true,
             args: [
                 {
                     id: 'method',
@@ -42,20 +43,20 @@ export default class MemberLogChannelCommand extends Command {
 
     public async exec(message: Message, { method, channel }: { method: string, channel: TextChannel }): Promise<Message | Message[]> {
         if (method === 'get') {
-            const memberLog: string | TextChannel = await this.client.settings.get(message.guild!, 'memberLog', '');
-            if (memberLog === '') return message.util!.send('No member log text channel is set.');
-            return message.util!.send(`\`${message.guild!.name}\`'s member log text channel is set to \`${(memberLog as TextChannel).name}\``);
+            const auditLog: string | TextChannel = await this.client.settings.get('0', 'modLog', '');
+            if (auditLog === '' || !this.client.channels.has((auditLog as TextChannel).id)) return message.util!.send('No audit log text channel is set.');
+            return message.util!.send(`${this.client.user}'s audit log text channel is set to \`${(auditLog as TextChannel).name}\``);
         } else if (method === 'set') {
-            await this.client.settings.set(message.guild!, 'memberLog', channel.id);
-            return message.util!.send(`\`${message.guild!.name}\`'s member log text channel is now \`${channel.name}\``);
+            await this.client.settings.set('0', 'modLog', channel.id);
+            return message.util!.send(`${this.client.user} audit log text channel is now \`${channel.name}\``);
         } else if (method === 'clear') {
-            await this.client.settings.set(message.guild!, 'memberLog', '');
-            return message.util!.send(`\`${message.guild!.name}\`'s member log text channel was cleared.`);
+            await this.client.settings.set('0', 'modLog', '');
+            return message.util!.send(`${this.client.user}'s audit log text channel was cleared.`);
         } else {
             const prefix = await (this.handler.prefix as PrefixSupplier)(message);
             return message.util!.send(stripIndents`
-                    That method doesn't exist on \`memberLog\`;
-                    Try \`${prefix}help memberLog\` for help.`);
+                    That method doesn't exist on \`auditLog\`;
+                    Try \`${prefix}help auditLog\` for help.`);
         }
     }
 }

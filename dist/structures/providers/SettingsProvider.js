@@ -20,7 +20,7 @@ class SettingsProvider extends discord_akairo_1.Provider {
         const id = this.getGuildId(guild);
         if (this.items.has(id)) {
             const value = this.items.get(id)[key];
-            return value === null ? defaultValue : value;
+            return value === undefined ? defaultValue : value;
         }
         return defaultValue;
     }

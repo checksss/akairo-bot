@@ -9,6 +9,7 @@ const discord_js_1 = require("discord.js");
 const mongoose_1 = __importDefault(require("mongoose"));
 const SettingsProvider_1 = __importDefault(require("../structures/providers/SettingsProvider"));
 const Tags_1 = require("../structures/models/Tags");
+const Logger_1 = require("../structures/util/Logger");
 require('dotenv').config();
 class AkairoBotClient extends discord_akairo_1.AkairoClient {
     constructor(config) {
@@ -79,6 +80,7 @@ class AkairoBotClient extends discord_akairo_1.AkairoClient {
         });
         this.config = config;
         this.cache = new discord_js_1.Collection();
+        this.logger = Logger_1.Logger;
     }
     async _init() {
         this.commandHandler.useInhibitorHandler(this.inhibitorHandler);
@@ -89,10 +91,15 @@ class AkairoBotClient extends discord_akairo_1.AkairoClient {
             listenerHandler: this.listenerHandler
         });
         this.commandHandler.loadAll();
+        this.logger.log(`Commands loaded: ${this.commandHandler.modules.size}`);
         this.inhibitorHandler.loadAll();
+        this.logger.log(`Inhibitors loaded: ${this.inhibitorHandler.modules.size}`);
         this.listenerHandler.loadAll();
+        this.logger.log(`Listeners loaded: ${this.listenerHandler.modules.size}`);
         this.settings = new SettingsProvider_1.default();
         await this.settings.init();
+        this.logger.log('Settings provider initialized');
+        process.on('uncaughtException', (err) => this.logger.error(err.stack));
     }
     async start() {
         try {
@@ -101,6 +108,7 @@ class AkairoBotClient extends discord_akairo_1.AkairoClient {
                 useFindAndModify: false,
                 useUnifiedTopology: true
             });
+            this.logger.log('MongoDB connected');
         }
         catch (e) {
             console.log(e);

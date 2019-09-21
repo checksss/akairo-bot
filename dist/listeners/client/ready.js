@@ -11,7 +11,7 @@ class ReadyListener extends discord_akairo_1.Listener {
         });
     }
     async exec() {
-        console.log(`Logged in as ${this.client.user.tag}`);
+        this.client.logger.info(`Logged in as ${this.client.user.tag}`);
         this.client.user.setPresence({ activity: {
                 name: `${process.env.prefix}help`, type: 'PLAYING'
             }, status: 'dnd' });

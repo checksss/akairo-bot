@@ -19,7 +19,7 @@ export default class SettingsProvider extends Provider {
         const id: string = this.getGuildId(guild);
         if (this.items.has(id)) {
             const value = this.items.get(id)[key];
-            return value === null ? defaultValue : value;
+            return value === undefined ? defaultValue : value;
         }
 
         return defaultValue;

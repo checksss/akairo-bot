@@ -4,6 +4,7 @@ import { Message, Util, Collection, Guild, VoiceChannel, TextChannel, DMChannel,
 import mongoose from 'mongoose';
 import SettingsProvider from '../structures/providers/SettingsProvider';
 import { Tags } from '../structures/models/Tags';
+import { Logger } from '../structures/util/Logger';
 require('dotenv').config();
 
 declare module 'discord-akairo' {
@@ -12,6 +13,8 @@ declare module 'discord-akairo' {
         commandHandler: CommandHandler,
         config: AkairoBotOptions,
         cache: Collection<string, Message>
+        audioStorage: any,
+        logger: Logger
     }
 }
 
@@ -57,6 +60,8 @@ export default class AkairoBotClient extends AkairoClient {
 
     public cache: Collection<string, Message>;
 
+    public logger: Logger;
+
     public constructor(config: AkairoBotOptions) {
         super({ ownerID: config.owner }, {
             messageCacheMaxSize: 1000,
@@ -99,6 +104,8 @@ export default class AkairoBotClient extends AkairoClient {
         this.config = config;
 
         this.cache = new Collection<string, Message>();
+
+        this.logger = Logger;
     }
 
     private async _init(): Promise<void> {
@@ -111,11 +118,17 @@ export default class AkairoBotClient extends AkairoClient {
         });
 
         this.commandHandler.loadAll();
+        this.logger.log(`Commands loaded: ${this.commandHandler.modules.size}`);
         this.inhibitorHandler.loadAll();
+        this.logger.log(`Inhibitors loaded: ${this.inhibitorHandler.modules.size}`)
         this.listenerHandler.loadAll();
+        this.logger.log(`Listeners loaded: ${this.listenerHandler.modules.size}`);
 
         this.settings = new SettingsProvider();
         await this.settings.init();
+        this.logger.log('Settings provider initialized');
+
+        process.on('uncaughtException', (err) => this.logger.error(err.stack));
     }
 
     public async start(): Promise<string> {
@@ -125,6 +138,7 @@ export default class AkairoBotClient extends AkairoClient {
                 useFindAndModify: false,
                 useUnifiedTopology: true
             });
+            this.logger.log('MongoDB connected');
         } catch (e) {
             console.log(e);
             return process.exit();
