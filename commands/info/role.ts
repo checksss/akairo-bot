@@ -69,7 +69,7 @@ export default class RoleInfoCommand extends Command {
             (permission): string => role.permissions.serialize()[permission]
         );
         const embed = new MessageEmbed()
-            .setColor([155, 200, 200])
+            .setColor(this.client.constants.infoEmbed)
             .setDescription(`Info about **${role.name}** (ID: ${role.id})`)
             .addField(
                 '❯ Info',

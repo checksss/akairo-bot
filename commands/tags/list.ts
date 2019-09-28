@@ -31,7 +31,7 @@ export default class TagListCommand extends Command {
             }
 
             const embed = new MessageEmbed()
-                .setColor([155, 200, 200])
+                .setColor(this.client.constants.infoEmbed)
                 .setAuthor(`**${member.user.tag} (${member.id})`, member.user.displayAvatarURL())
                 .setDescription(
                     tags.map((tag: any) => `\`${tag.name}\``)

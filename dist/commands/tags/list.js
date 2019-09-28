@@ -31,7 +31,7 @@ class TagListCommand extends discord_akairo_1.Command {
                 return message.util.reply(`**${member.displayName}** doesn't have any tags.`);
             }
             const embed = new discord_js_1.MessageEmbed()
-                .setColor([155, 200, 200])
+                .setColor(this.client.constants.infoEmbed)
                 .setAuthor(`**${member.user.tag} (${member.id})`, member.user.displayAvatarURL())
                 .setDescription(tags.map((tag) => `\`${tag.name}\``)
                 .sort()

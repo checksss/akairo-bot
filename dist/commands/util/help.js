@@ -26,7 +26,7 @@ class HelpCommand extends discord_akairo_1.Command {
         const prefix = await this.handler.prefix(message);
         if (!command) {
             const embed = new discord_js_1.MessageEmbed()
-                .setColor([155, 200, 200])
+                .setColor(this.client.constants.infoEmbed)
                 .addField('❯ Commands', common_tags_1.stripIndents `A list of available commands.
                     For additional info on a command, type \`${prefix}help <command>\`
                 `);

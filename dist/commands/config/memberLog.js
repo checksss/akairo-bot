@@ -41,9 +41,10 @@ class MemberLogChannelCommand extends discord_akairo_1.Command {
     }
     async exec(message, { method, channel }) {
         if (method === 'get') {
-            const memberLog = await this.client.settings.get(message.guild, 'memberLog', '');
-            if (memberLog === '')
+            let memberLog = await this.client.settings.get(message.guild, 'memberLog', '');
+            if (!message.guild.channels.has(memberLog))
                 return message.util.send('No member log text channel is set.');
+            memberLog = message.guild.channels.get(memberLog);
             return message.util.send(`\`${message.guild.name}\`'s member log text channel is set to \`${memberLog.name}\``);
         }
         else if (method === 'set') {

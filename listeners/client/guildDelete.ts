@@ -13,7 +13,7 @@ export default class GuildDeleteListener extends Listener {
     public async exec(guild: Guild): Promise<Message | Message[] | void> {
         const updateChannel = this.client.channels.get(await this.client.settings.get('global', 'modLog', ''));
         const embed = new MessageEmbed()
-            .setColor([255, 80, 55])
+            .setColor(this.client.constants.guildRemove)
             .setAuthor(guild.name, guild.iconURL()!)
             .addField('ID', guild.id, true)
             .addField('Name', guild.name, true)

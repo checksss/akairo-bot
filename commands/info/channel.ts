@@ -31,7 +31,7 @@ export default class ChannelInfoCommand extends Command {
 
     public async exec(message: Message, { channel }: { channel: TextChannel }): Promise<Message | Message[]> {
         const embed = new MessageEmbed()
-            .setColor([155, 200, 200])
+            .setColor(this.client.constants.infoEmbed)
             .setDescription(`Info about **${channel.name}**`)
             .addField(
                 '❯ Info',

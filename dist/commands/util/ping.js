@@ -17,7 +17,7 @@ class PingCommand extends discord_akairo_1.Command {
         const embed1 = new discord_js_1.MessageEmbed().setColor([155, 200, 200]).setDescription('Pinging...');
         const m = await message.util.send(embed1);
         const embed = new discord_js_1.MessageEmbed()
-            .setColor([155, 200, 200])
+            .setColor(this.client.constants.infoEmbed)
             // @ts-ignore
             .setDescription(`🏓 **${Math.round(this.client.ws.ping).toString()}**ms`);
         // @ts-ignore

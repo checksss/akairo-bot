@@ -46,7 +46,7 @@ class TagInfoCommand extends discord_akairo_1.Command {
         }
         const guild = this.client.guilds.get(tag.guild);
         const embed = new discord_js_1.MessageEmbed()
-            .setColor([155, 200, 200])
+            .setColor(this.client.constants.infoEmbed)
             .addField('❯ Name', tag.name)
             .addField('❯ User', user ? `${user.tag} (ID: ${user.id})` : "Couldn't fetch user.")
             .addField('❯ Guild', guild ? `${guild.name}` : "Couldn't fetch guild.")

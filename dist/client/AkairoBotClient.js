@@ -6,16 +6,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = require("path");
 const discord_akairo_1 = require("discord-akairo");
 const discord_js_1 = require("discord.js");
+const express_1 = __importDefault(require("express"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const SettingsProvider_1 = __importDefault(require("../structures/providers/SettingsProvider"));
 const Tags_1 = require("../structures/models/Tags");
 const Logger_1 = require("../structures/util/Logger");
-require('dotenv').config();
+require("dotenv/config");
 class AkairoBotClient extends discord_akairo_1.AkairoClient {
     constructor(config) {
         super({ ownerID: config.owner }, {
             messageCacheMaxSize: 1000,
-            disableEveryone: true
+            disableEveryone: true,
+            shardCount: 2
         });
         this.commandHandler = new discord_akairo_1.CommandHandler(this, {
             directory: path_1.join(__dirname, '..', 'commands'),
@@ -81,6 +83,13 @@ class AkairoBotClient extends discord_akairo_1.AkairoClient {
         this.config = config;
         this.cache = new discord_js_1.Collection();
         this.logger = Logger_1.Logger;
+        this.constants = {
+            infoEmbed: [155, 200, 200],
+            memberAdd: [125, 235, 75],
+            memberRemove: [245, 155, 55],
+            guildAdd: [125, 235, 75],
+            guildRemove: [255, 80, 55]
+        };
     }
     async _init() {
         this.commandHandler.useInhibitorHandler(this.inhibitorHandler);
@@ -99,7 +108,21 @@ class AkairoBotClient extends discord_akairo_1.AkairoClient {
         this.settings = new SettingsProvider_1.default();
         await this.settings.init();
         this.logger.log('Settings provider initialized');
+        const port = process.env.port || 8080;
+        express_1.default().all('*', (req, res) => {
+            const content = {
+                info: { guilds: this.guilds.size, users: this.guilds.reduce((a, b) => a + b.memberCount, 0), channels: this.channels.size },
+                client: { commands: this.commandHandler.modules.size, listeners: this.listenerHandler.modules.size, inhibitors: this.inhibitorHandler.modules.size },
+                shards: this.ws.shards.map(s => { return { id: s.id, status: s.status, ping: Math.round(s.ping) }; })
+            };
+            res.json(content);
+            res.status(this.ws.shards.every(s => s.status === 0) ? 200 : 500).end();
+        }).listen(port, () => Logger_1.Logger.log(`Listening on port ${port}`));
         process.on('uncaughtException', (err) => this.logger.error(err.stack));
+        process.on('unhandledRejection', async (reason) => this.logger.error(`Unhandled Rejection: ${reason ? reason : 'no reason'}`));
+        this.on('shardReady', (id) => this.logger.info(`Shard ${id} ready`));
+        this.on('shardDisconnect', (event, id) => this.logger.error(`Shard ${id} disconnected`));
+        this.on('shardError', (error, id) => this.logger.error(`Shard ${id} error: ${error.message}`));
     }
     async start() {
         try {
@@ -111,7 +134,8 @@ class AkairoBotClient extends discord_akairo_1.AkairoClient {
             this.logger.log('MongoDB connected');
         }
         catch (e) {
-            console.log(e);
+            this.logger.error(`Failed to connect to MongoDB`);
+            this.logger.error(e);
             return process.exit();
         }
         await this._init();

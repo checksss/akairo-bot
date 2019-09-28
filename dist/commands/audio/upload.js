@@ -25,11 +25,11 @@ class UploadCommand extends discord_akairo_1.Command {
         if (!file)
             return message.util.send('You have to upload a file.');
         const supported = supportedFormats.includes(path_1.extname(file.name));
-        const raw = node_fetch_1.default(file.proxyURL).then(async (r) => {
+        node_fetch_1.default(file.proxyURL).then(async (r) => {
             const f = fs_1.default.createWriteStream('temp.mp3');
-            console.log(f.path);
+            this.client.logger.info(f.path);
             r.body.pipe(f);
-            r.body.on('error', console.error);
+            r.body.on('error', this.client.logger.error);
         });
         return message.util.send(`${supported}`);
     }

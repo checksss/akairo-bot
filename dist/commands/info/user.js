@@ -38,7 +38,7 @@ class UserInfoCommand extends discord_akairo_1.Command {
     async exec(message, { member }) {
         const { user } = member;
         const embed = new discord_js_1.MessageEmbed()
-            .setColor([155, 200, 200])
+            .setColor(this.client.constants.infoEmbed)
             .setDescription(`Info about **${user.tag}** (ID: ${member.id})`)
             .addField('❯ Member Details', common_tags_1.stripIndents `
 				${member.nickname == undefined ? '• No nickname' : ` • Nickname: ${member.nickname}`}

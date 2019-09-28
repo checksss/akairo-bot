@@ -48,7 +48,7 @@ class EmojiInfoCommand extends discord_akairo_1.Command {
     }
     async exec(message, { emoji }) {
         const embed = new discord_js_1.MessageEmbed()
-            .setColor([155, 200, 200]);
+            .setColor(this.client.constants.infoEmbed);
         if (emoji instanceof discord_js_1.GuildEmoji) {
             embed.setDescription(`Info about **${emoji.name}** (ID: ${emoji.id})`);
             embed.setThumbnail(emoji.url);

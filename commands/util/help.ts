@@ -26,7 +26,7 @@ export default class HelpCommand extends Command {
         const prefix = await (this.handler.prefix as PrefixSupplier)(message);
         if (!command) {
             const embed = new MessageEmbed()
-                .setColor([155, 200, 200])
+                .setColor(this.client.constants.infoEmbed)
                 .addField('❯ Commands', stripIndents`A list of available commands.
                     For additional info on a command, type \`${prefix}help <command>\`
                 `);

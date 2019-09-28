@@ -9,6 +9,7 @@ const Settings_1 = __importDefault(require("../models/Settings"));
 class SettingsProvider extends discord_akairo_1.Provider {
     constructor() {
         super();
+        this.model = Settings_1.default;
     }
     async init() {
         const settingsDocs = await Settings_1.default.find();

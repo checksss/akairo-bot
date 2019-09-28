@@ -24,17 +24,18 @@ class GuildCreateListener extends discord_akairo_1.Listener {
             return c.name === 'general' || c.name === 'chat' || c.name === 'main';
         }).first();
         const updateChannel = this.client.channels.get(await this.client.settings.get('global', 'modLog', ''));
+        const guildOwner = await this.client.users.fetch(guild.ownerID);
         const logEmbed = new discord_js_1.MessageEmbed()
-            .setColor([135, 235, 75])
+            .setColor(this.client.constants.guildAdd)
             .setAuthor(guild.name, guild.iconURL())
             .addField('ID', guild.id, true)
             .addField('Name', guild.name, true)
-            .addField('Owner', guild.owner.user.tag, true)
+            .addField('Owner', guildOwner.tag, true)
             .addField('Region', guild.region, true)
             .addField('Channels', guild.channels.size, true)
             .addField('Members', guild.members.size, true)
-            .addField('Humans', guild.members.filter(m => !m.user.bot).size, true)
-            .addField('Bots', guild.members.filter(m => m.user.bot).size, true)
+            .addField('Humans', `~${guild.members.filter(m => !m.user.bot).size}`, true)
+            .addField('Bots', `~${guild.members.filter(m => m.user.bot).size}`, true)
             .addBlankField(true)
             .setFooter('Joined Guild')
             .setTimestamp(Date.now());
@@ -50,12 +51,12 @@ class GuildCreateListener extends discord_akairo_1.Listener {
             modLog: '',
             tokenFiltering: true,
             blacklist: [],
-            moderators: [guild.owner.id]
+            moderators: [guildOwner.id]
         }, (err) => {
             if (err)
-                return guildGeneral.send('The guild settings couldn\'t be created.');
+                this.client.logger.error(`Settings for ${guild.name} (${guild.id}) - ${guild.owner.user.tag} couldn't be created`);
             const embed = new discord_js_1.MessageEmbed()
-                .setColor([155, 200, 200])
+                .setColor(this.client.constants.infoEmbed)
                 .setAuthor(this.client.user.tag, this.client.user.displayAvatarURL())
                 .setTimestamp(Date.now());
             if (guildGeneral) {
@@ -69,9 +70,9 @@ class GuildCreateListener extends discord_akairo_1.Listener {
             else {
                 embed.setTitle('Can\'t find main text channel');
                 embed.setDescription(common_tags_1.stripIndents `
-                Please respond with \`\`?main set\`\` in
+                Please send \`\`;main set\`\` in
                 \`\`${guild.name}\`\`'s main text channel
-                **ex: _?main set_ in #the-lounge**`);
+                **ex: _;main set_ in #the-lounge**`);
                 embed.setFooter('Error');
             }
             return guild.owner.send(embed);

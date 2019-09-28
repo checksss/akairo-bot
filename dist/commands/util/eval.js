@@ -67,14 +67,14 @@ class EvalCommand extends discord_akairo_1.Command {
         const append = `\n${appendPart}\n\`\`\``;
         if (input) {
             return discord_js_1.Util.splitMessage(common_tags_1.stripIndents `
-				*Executed in ${hrDiff[0] > 0 ? `${hrDiff[0]}s ` : ''}${hrDiff[1] / 1000000}ms.*
+				*Executed in **${hrDiff[0] > 0 ? `${hrDiff[0]}s ` : ''}${hrDiff[1] / 1000000}ms.***
 				\`\`\`javascript
 				${inspected}
 				\`\`\`
 			`, { maxLength: 1900, prepend, append });
         }
         return discord_js_1.Util.splitMessage(common_tags_1.stripIndents `
-            *Callback executed after ${hrDiff[0] > 0 ? `${hrDiff[0]}s ` : ''}${hrDiff[1] / 1000000}ms.*
+            *Callback executed after **${hrDiff[0] > 0 ? `${hrDiff[0]}s ` : ''}${hrDiff[1] / 1000000}ms.***
             \`\`\`javascript
             ${inspected}
             \`\`\`

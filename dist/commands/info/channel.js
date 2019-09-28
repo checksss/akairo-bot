@@ -41,7 +41,7 @@ class ChannelInfoCommand extends discord_akairo_1.Command {
     }
     async exec(message, { channel }) {
         const embed = new discord_js_1.MessageEmbed()
-            .setColor([155, 200, 200])
+            .setColor(this.client.constants.infoEmbed)
             .setDescription(`Info about **${channel.name}**`)
             .addField('❯ Info', common_tags_1.stripIndents `
                 • Type: ${pascal_case_1.default(channel.type)}

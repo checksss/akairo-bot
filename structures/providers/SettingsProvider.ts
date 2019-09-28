@@ -4,8 +4,11 @@ import mongoose from 'mongoose';
 import Settings from '../models/Settings';
 
 export default class SettingsProvider extends Provider {
+    public model: mongoose.Model<mongoose.Document>;
+
     public constructor() {
         super();
+        this.model = Settings;
     }
 
     public async init(): Promise<void> {

@@ -40,7 +40,7 @@ export default class SearchTagCommand extends Command {
             return message.util!.reply('try using a smaller query.');
 
         const embed = new MessageEmbed()
-            .setColor([155, 200, 200])
+            .setColor(this.client.constants.infoEmbed)
             .setAuthor(`${message.author!.tag} (${message.author!.id})`, message.author!.displayAvatarURL())
             .setDescription(search);
 

@@ -31,7 +31,7 @@ export default class UserInfoCommand extends Command {
     public async exec(message: Message, { member }: { member: GuildMember }): Promise<Message | Message[]> {
         const { user } = member;
         const embed = new MessageEmbed()
-            .setColor([155, 200, 200])
+            .setColor(this.client.constants.infoEmbed)
             .setDescription(`Info about **${user.tag}** (ID: ${member.id})`)
             .addField(
                 '❯ Member Details',

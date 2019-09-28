@@ -1,11 +1,13 @@
 import { join } from 'path';
 import { AkairoClient, CommandHandler, InhibitorHandler, ListenerHandler, Flag } from 'discord-akairo';
-import { Message, Util, Collection, Guild, VoiceChannel, TextChannel, DMChannel, VoiceConnection } from 'discord.js';
+import { Message, Util, Collection, ColorResolvable, GuildMember, Guild, VoiceChannel, TextChannel, DMChannel, VoiceConnection } from 'discord.js';
+import express from 'express';
+
 import mongoose from 'mongoose';
 import SettingsProvider from '../structures/providers/SettingsProvider';
 import { Tags } from '../structures/models/Tags';
 import { Logger } from '../structures/util/Logger';
-require('dotenv').config();
+import 'dotenv/config';
 
 declare module 'discord-akairo' {
     interface AkairoClient {
@@ -14,13 +16,22 @@ declare module 'discord-akairo' {
         config: AkairoBotOptions,
         cache: Collection<string, Message>
         audioStorage: any,
-        logger: Logger
+        logger: Logger,
+        constants: ClientConstants
     }
 }
 
 interface AkairoBotOptions {
     owner?: string,
     token?: string
+}
+
+interface ClientConstants {
+    infoEmbed: ColorResolvable,
+    memberAdd: ColorResolvable,
+    memberRemove: ColorResolvable,
+    guildAdd: ColorResolvable,
+    guildRemove: ColorResolvable
 }
 
 export default class AkairoBotClient extends AkairoClient {
@@ -62,10 +73,13 @@ export default class AkairoBotClient extends AkairoClient {
 
     public logger: Logger;
 
+    public constants: ClientConstants;
+
     public constructor(config: AkairoBotOptions) {
         super({ ownerID: config.owner }, {
             messageCacheMaxSize: 1000,
-            disableEveryone: true
+            disableEveryone: true,
+            shardCount: 2
         });
 
         this.commandHandler.resolver.addType('tag', async (message, phrase): Promise<any> => {
@@ -106,6 +120,14 @@ export default class AkairoBotClient extends AkairoClient {
         this.cache = new Collection<string, Message>();
 
         this.logger = Logger;
+
+        this.constants = {
+            infoEmbed: [155, 200, 200],
+            memberAdd: [125, 235, 75],
+            memberRemove: [245, 155, 55],
+            guildAdd: [125, 235, 75],
+            guildRemove: [255, 80, 55]
+        }
     }
 
     private async _init(): Promise<void> {
@@ -128,7 +150,24 @@ export default class AkairoBotClient extends AkairoClient {
         await this.settings.init();
         this.logger.log('Settings provider initialized');
 
+        const port = process.env.port || 8080;
+        express().all('*', (req: express.Request, res: express.Response) => {
+            const content = {
+                info: { guilds: this.guilds.size, users: this.guilds.reduce((a, b) => a + b.memberCount, 0), channels: this.channels.size },
+                client: { commands: this.commandHandler.modules.size, listeners: this.listenerHandler.modules.size, inhibitors: this.inhibitorHandler.modules.size },
+                shards: this.ws.shards.map(s => { return { id: s.id, status: s.status, ping: Math.round(s.ping) }; })
+            };
+
+            res.json(content);
+            res.status(this.ws.shards.every(s => s.status === 0) ? 200 : 500).end();
+        }).listen(port, () => Logger.log(`Listening on port ${port}`));
+
         process.on('uncaughtException', (err) => this.logger.error(err.stack));
+        process.on('unhandledRejection', async (reason) => this.logger.error(`Unhandled Rejection: ${reason ? reason : 'no reason'}`));
+        
+        this.on('shardReady', (id: number) => this.logger.info(`Shard ${id} ready`));
+        this.on('shardDisconnect', (event, id: number) => this.logger.error(`Shard ${id} disconnected`));
+        this.on('shardError', (error: Error, id: number) => this.logger.error(`Shard ${id} error: ${error.message}`));
     }
 
     public async start(): Promise<string> {
@@ -140,7 +179,8 @@ export default class AkairoBotClient extends AkairoClient {
             });
             this.logger.log('MongoDB connected');
         } catch (e) {
-            console.log(e);
+            this.logger.error(`Failed to connect to MongoDB`);
+            this.logger.error(e);
             return process.exit();
         }
 

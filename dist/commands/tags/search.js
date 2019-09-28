@@ -38,7 +38,7 @@ class SearchTagCommand extends discord_akairo_1.Command {
         if (search.length >= 1950)
             return message.util.reply('try using a smaller query.');
         const embed = new discord_js_1.MessageEmbed()
-            .setColor([155, 200, 200])
+            .setColor(this.client.constants.infoEmbed)
             .setAuthor(`${message.author.tag} (${message.author.id})`, message.author.displayAvatarURL())
             .setDescription(search);
         return message.util.send(embed);

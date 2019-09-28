@@ -15,7 +15,8 @@ export default class MessageReactionAddListener extends Listener {
         if (reaction.message.createdTimestamp - Date.now() > 1209.6e6 || !reaction.message.deletable) return;
         if (reaction.message.channel.type === 'dm') return reaction.message.delete();
 
-        const moderators = await this.client.settings.get(reaction.message.guild!, 'moderators', [reaction.message.guild!.owner!.id]);
+        const guildOwner = await this.client.users.fetch(reaction.message.guild!.ownerID);
+        const moderators = await this.client.settings.get(reaction.message.guild!, 'moderators', [guildOwner.id]);
         if (reaction.message.author!.id !== user.id && !moderators.includes(user.id)) return;
         return reaction.message.delete();
     }

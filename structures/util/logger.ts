@@ -3,23 +3,23 @@ import moment from 'moment';
 import util from 'util';
 
 export class Logger implements Logger {
-    public static log(content: any, { color = 'grey', tag = 'Log' } = {}) {
+    public static log(content: any, { color = 'grey', tag = 'Log' }: LoggerParam = {}) {
         this.write(content, { color, tag });
     }
 
-    public static info(content: any, { color = 'green', tag = 'Info' } = {}) {
+    public static info(content: any, { color = 'green', tag = 'Info' }: LoggerParam = {}): void {
         this.write(content, { color, tag });
     }
 
-    public static error(content: any, { color = 'red', tag = 'Error' } = {}) {
+    public static error(content: any, { color = 'red', tag = 'Error' }: LoggerParam = {}) {
         this.write(content, { color, tag, error: true });
     }
 
-    public static stacktrace(content: any, { color = 'red', tag = 'Error'} = {}) {
+    public static stacktrace(content: any, { color = 'red', tag = 'Error'}: LoggerParam = {}) {
         this.write(content, { color, tag, error: true });
     }
 
-    public static write(content: any, { color = 'grey', tag = 'Log', error = false } = {}) {
+    public static write(content: any, { color = 'grey', tag = 'Log', error = false }: LoggerParam = {}) {
         const timestamp = chalk.cyan(`[${moment().format('YYYY-MM-DD HH:mm:ss')}]:`);
         const levelTag = chalk.bold(`[${tag}]:`);
         // @ts-ignore
@@ -36,8 +36,14 @@ export class Logger implements Logger {
 }
 
 export interface Logger {
-    log(content: any, { color, tag }?: { color: string, tag: string }): void;
-    info(content: any, { color, tag }?: { color: string, tag: string }): void;
-    error(content: any, { color, tag }?: { color: string, tag: string }): void;
-    stacktrace(content: any, { color, tag }?: { color: string, tag: string }): void;
+    log(content: any, { color, tag }?: LoggerParam): void;
+    info(content: any, { color, tag }?: LoggerParam): void;
+    error(content: any, { color, tag }?: LoggerParam): void;
+    stacktrace(content: any, { color, tag }?: LoggerParam): void;
+}
+
+interface LoggerParam {
+    color?: string | undefined;
+    tag?: string | undefined;
+    error?: boolean | undefined;
 }

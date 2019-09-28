@@ -33,8 +33,9 @@ class ServerInfoCommand extends discord_akairo_1.Command {
         });
     }
     async exec(message) {
+        const guildOwner = await message.guild.members.fetch(message.guild.ownerID);
         const embed = new discord_js_1.MessageEmbed()
-            .setColor([155, 200, 200])
+            .setColor(this.client.constants.infoEmbed)
             .setDescription(`Info about **${message.guild.name}** (ID: ${message.guild.id})`)
             .addField('❯ Channels', common_tags_1.stripIndents `
                 • ${message.guild.channels.filter((ch) => ch.type === 'text').size} Text, ${message.guild.channels.filter((ch) => ch.type === 'voice').size} Voice
@@ -42,7 +43,7 @@ class ServerInfoCommand extends discord_akairo_1.Command {
             `)
             .addField('❯ Members', common_tags_1.stripIndents `
                 • ${message.guild.memberCount} members
-                • Owner: ${message.guild.owner.user.tag} (ID: ${message.guild.ownerID})
+                • Owner: ${guildOwner.user.tag} (ID: ${guildOwner.id})
             `)
             .addField('❯ Other', common_tags_1.stripIndents `
                 • Roles: ${message.guild.roles.size}

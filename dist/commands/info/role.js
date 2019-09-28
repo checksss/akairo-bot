@@ -70,7 +70,7 @@ class RoleInfoCommand extends discord_akairo_1.Command {
         // @ts-ignore
         (permission) => role.permissions.serialize()[permission]);
         const embed = new discord_js_1.MessageEmbed()
-            .setColor([155, 200, 200])
+            .setColor(this.client.constants.infoEmbed)
             .setDescription(`Info about **${role.name}** (ID: ${role.id})`)
             .addField('❯ Info', common_tags_1.stripIndents `
 				• Color: ${role.hexColor.toUpperCase()}

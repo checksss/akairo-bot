@@ -9,8 +9,8 @@ export default class InvalidatedListener extends Listener {
         });
     }
 
-    public async exec() {
-        console.log('Session Invalidated');
+    public async exec(): Promise<void> {
+        this.client.logger.error('Session invalidated');
         process.exit();
     }
 }

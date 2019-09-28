@@ -67,7 +67,7 @@ export default class EvalCommand extends Command {
         const append = `\n${appendPart}\n\`\`\``;
         if (input) {
             return Util.splitMessage(stripIndents`
-				*Executed in ${hrDiff[0] > 0 ? `${hrDiff[0]}s ` : ''}${hrDiff[1] / 1000000}ms.*
+				*Executed in **${hrDiff[0] > 0 ? `${hrDiff[0]}s ` : ''}${hrDiff[1] / 1000000}ms.***
 				\`\`\`javascript
 				${inspected}
 				\`\`\`
@@ -75,7 +75,7 @@ export default class EvalCommand extends Command {
         }
 
         return Util.splitMessage(stripIndents`
-            *Callback executed after ${hrDiff[0] > 0 ? `${hrDiff[0]}s ` : ''}${hrDiff[1] / 1000000}ms.*
+            *Callback executed after **${hrDiff[0] > 0 ? `${hrDiff[0]}s ` : ''}${hrDiff[1] / 1000000}ms.***
             \`\`\`javascript
             ${inspected}
             \`\`\`

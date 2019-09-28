@@ -42,8 +42,9 @@ export default class MemberLogChannelCommand extends Command {
 
     public async exec(message: Message, { method, channel }: { method: string, channel: TextChannel }): Promise<Message | Message[]> {
         if (method === 'get') {
-            const memberLog: string | TextChannel = await this.client.settings.get(message.guild!, 'memberLog', '');
-            if (memberLog === '') return message.util!.send('No member log text channel is set.');
+            let memberLog = await this.client.settings.get(message.guild!, 'memberLog', '');
+            if (!message.guild!.channels.has(memberLog)) return message.util!.send('No member log text channel is set.');
+            memberLog = message.guild!.channels.get(memberLog);
             return message.util!.send(`\`${message.guild!.name}\`'s member log text channel is set to \`${(memberLog as TextChannel).name}\``);
         } else if (method === 'set') {
             await this.client.settings.set(message.guild!, 'memberLog', channel.id);

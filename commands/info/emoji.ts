@@ -40,7 +40,7 @@ export default class EmojiInfoCommand extends Command {
     
     public async exec(message: Message, { emoji }: { emoji: any }): Promise<Message | Message[]> {
         const embed = new MessageEmbed()
-            .setColor([155, 200, 200]);
+            .setColor(this.client.constants.infoEmbed);
 
         if (emoji instanceof GuildEmoji) {
             embed.setDescription(`Info about **${emoji.name}** (ID: ${emoji.id})`);

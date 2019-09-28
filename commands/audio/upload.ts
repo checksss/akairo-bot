@@ -3,7 +3,7 @@ import { Message, MessageAttachment } from 'discord.js';
 import { AudioClips } from '../../structures/models/AudioClip';
 import { extname } from 'path';
 import fetch from 'node-fetch';
-import fs, { readFileSync } from 'fs';
+import fs from 'fs';
 
 export default class UploadCommand extends Command {
     public constructor() {
@@ -23,11 +23,11 @@ export default class UploadCommand extends Command {
         const file: MessageAttachment | undefined = message.attachments.first();
         if (!file) return message.util!.send('You have to upload a file.');
         const supported: boolean = supportedFormats.includes(extname(file.name!));
-        const raw = fetch(file.proxyURL).then(async r => {
+        fetch(file.proxyURL).then(async r => {
             const f = fs.createWriteStream('temp.mp3');
-            console.log(f.path);
+            this.client.logger.info(f.path);
             r.body.pipe(f);
-            r.body.on('error', console.error);
+            r.body.on('error', this.client.logger.error);
         });
 
         return message.util!.send(`${supported}`);

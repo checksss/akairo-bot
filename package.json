@@ -12,6 +12,7 @@
   "dependencies": {
     "@rocka/mp3-duration": "^2.0.0",
     "@types/common-tags": "^1.8.0",
+    "@types/express": "^4.17.1",
     "@types/mongodb": "^3.3.3",
     "@types/mongoose": "^5.5.17",
     "@types/node": "^12.7.5",
@@ -24,6 +25,7 @@
     "discord-akairo": "github:discord-akairo/discord-akairo",
     "discord.js": "github:discordjs/discord.js",
     "dotenv": "^8.1.0",
+    "express": "^4.17.1",
     "ffmpeg-static": "^2.6.0",
     "moment": "^2.24.0",
     "moment-duration-format": "^2.3.2",

@@ -31,8 +31,9 @@ export default class ServerInfoCommand extends Command {
     }
 
     public async exec(message: Message): Promise<Message | Message[]> {
+        const guildOwner = await message.guild!.members.fetch(message.guild!.ownerID);
         const embed = new MessageEmbed()
-            .setColor([155, 200, 200])
+            .setColor(this.client.constants.infoEmbed)
             .setDescription(`Info about **${message.guild!.name}** (ID: ${message.guild!.id})`)
             .addField(
                 '❯ Channels',
@@ -44,7 +45,7 @@ export default class ServerInfoCommand extends Command {
                 '❯ Members',
                 stripIndents`
                 • ${message.guild!.memberCount} members
-                • Owner: ${message.guild!.owner!.user.tag} (ID: ${message.guild!.ownerID})
+                • Owner: ${guildOwner.user.tag} (ID: ${guildOwner.id})
             `)
             .addField(
                 '❯ Other',
