@@ -153,7 +153,7 @@ export default class AkairoBotClient extends AkairoClient {
         const port = process.env.port || 8080;
         express().all('*', (req: express.Request, res: express.Response) => {
             const content = {
-                info: { guilds: this.guilds.size, users: this.guilds.reduce((a, b) => a + b.memberCount, 0), channels: this.channels.size },
+                info: { guilds: this.guilds.size, users: this.guilds.reduce((a, b) => a + b.memberCount, 0), channels: this.shard!.broadcastEval('this.channels.size') },
                 client: { commands: this.commandHandler.modules.size, listeners: this.listenerHandler.modules.size, inhibitors: this.inhibitorHandler.modules.size },
                 shards: this.ws.shards.map(s => { return { id: s.id, status: s.status, ping: Math.round(s.ping) }; })
             };
