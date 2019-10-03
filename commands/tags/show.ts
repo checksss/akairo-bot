@@ -43,12 +43,3 @@ export default class TagShowCommand extends Command {
         return message.util!.send(tag.content);
     }
 }
-
-/* interface Tag extends Document {
-    aliases: string[],
-    user: string,
-    guild: string,
-    name: string,
-    content: string,
-    uses: number
-} */

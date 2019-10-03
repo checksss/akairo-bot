@@ -25,20 +25,18 @@ class TagCommand extends discord_akairo_1.Command {
                 examples: [
                     'show Test',
                     'add Test Test',
-                    'add --hoist/--pin "Test 2" Test2',
+                    'add "Test 2" Test2',
                     'alias --add Test1 Test2',
                     'alias --del "Test 2" "Test 3"',
                     'del Test',
                     'edit Test Some new content',
                     'edit "Test 1" Some more new content',
-                    'edit Test --hoist',
-                    'edit Test --unhoist Some more new content',
                     'source Test',
                     'source --file Test',
                     'info Test',
                     'search Test',
-                    'list @Crawl',
-                    'download @Crawl'
+                    'list @badkin',
+                    'download @meatloaf dispenser'
                 ]
             },
             category: 'tags',

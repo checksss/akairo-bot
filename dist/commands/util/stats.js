@@ -27,11 +27,12 @@ class StatsCommand extends discord_akairo_1.Command {
     }
     async exec(message) {
         const owner = await this.client.users.fetch(this.client.config.owner);
+        const online = this.client.emojis.get(this.client.constants.shardOnlineEmoji);
+        const offline = this.client.emojis.get(this.client.constants.shardOfflineEmoji);
         const memAlloc = Math.round(process.memoryUsage().heapTotal / 1024 / 1024);
         const memUsed = Math.round(process.memoryUsage().heapUsed / 1024 / 1024);
         const memPercent = (memUsed / memAlloc * 100).toFixed(2);
-        let userCount = 0;
-        this.client.guilds.forEach(g => userCount += g.memberCount);
+        const userCount = this.client.guilds.reduce((m, g) => m + g.memberCount, 0);
         const embed = new discord_js_1.MessageEmbed()
             .setColor(this.client.constants.infoEmbed)
             .setDescription(`**${this.client.user.username} Statistics**`)
@@ -46,7 +47,7 @@ class StatsCommand extends discord_akairo_1.Command {
             .addField('❯ Version', `v${version}`, true)
             .addField('❯ Shards', `${this.client.ws.shards.map(s => {
             return common_tags_1.stripIndents `
-                        ${s.id} • Status: ${shardStatus[s.status]} (${Math.round(s.ping)} ms)
+                        ${s.status === 0 ? online : offline} ${s.id} • Status: ${shardStatus[s.status]} (${Math.round(s.ping)} ms)
                     `;
         }).join('\n')}`, true)
             .addField('❯ Invite', '[Discord](https://discordapp.com/api/oauth2/authorize?client_id=586995575686168595&permissions=8&scope=bot)', true)

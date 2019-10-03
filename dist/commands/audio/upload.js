@@ -9,8 +9,8 @@ const node_fetch_1 = __importDefault(require("node-fetch"));
 const fs_1 = __importDefault(require("fs"));
 class UploadCommand extends discord_akairo_1.Command {
     constructor() {
-        super('upload', {
-            aliases: ['upload'],
+        super('-upload', {
+            aliases: ['-upload'],
             description: {
                 content: 'Uploads a supported audio file.'
             },

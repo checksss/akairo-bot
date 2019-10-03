@@ -1,18 +1,15 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_akairo_1 = require("discord-akairo");
 const discord_js_1 = require("discord.js");
-const Settings_1 = __importDefault(require("../models/Settings"));
+const Settings_1 = require("../models/Settings");
 class SettingsProvider extends discord_akairo_1.Provider {
     constructor() {
         super();
-        this.model = Settings_1.default;
+        this.model = Settings_1.Settings;
     }
     async init() {
-        const settingsDocs = await Settings_1.default.find();
+        const settingsDocs = await Settings_1.Settings.find();
         for (const setting of settingsDocs) {
             this.items.set(setting.id, setting);
         }
@@ -30,18 +27,18 @@ class SettingsProvider extends discord_akairo_1.Provider {
         const data = this.items.get(id) || {};
         data[key] = value;
         this.items.set(id, data);
-        return await Settings_1.default.updateOne({ id }, { [key]: value });
+        return await Settings_1.Settings.updateOne({ id }, { [key]: value });
     }
     async delete(guild, key) {
         const id = this.getGuildId(guild);
         const data = this.items.get(id) || {};
         delete data[key];
-        return await Settings_1.default.updateOne({ id }, { [key]: null });
+        return await Settings_1.Settings.updateOne({ id }, { [key]: null });
     }
     async clear(guild) {
         const id = this.getGuildId(guild);
         this.items.delete(id);
-        return await Settings_1.default.deleteOne({ id });
+        return await Settings_1.Settings.deleteOne({ id });
     }
     getGuildId(guild) {
         if (guild instanceof discord_js_1.Guild)

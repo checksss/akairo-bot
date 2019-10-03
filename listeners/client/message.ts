@@ -1,5 +1,5 @@
 import { Listener } from 'discord-akairo';
-import { Message } from 'discord.js';
+import { Message, MessageReaction } from 'discord.js';
 
 export default class MessageListener extends Listener {
     public constructor() {

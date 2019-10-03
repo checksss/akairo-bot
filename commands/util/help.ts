@@ -41,7 +41,7 @@ export default class HelpCommand extends Command {
         const embed = new MessageEmbed()
             .setColor([155, 200, 200])
             .setTitle(`\`${command.aliases[0]} ${command.description.usage ? command.description.usage : ''}\``)
-            .addField('❯ Description', command.description.content || '\u200b');
+            .addField('❯ Description', `${command.description.content ? command.description.content : ''} ${command.description.ownerOnly ? '\n**[Owner Only]**': ''}`);
 
         if (command.aliases.length > 1) embed.addField('❯ Aliases', `\`${command.aliases.join('` `')}\``, true);
         if (command.description.examples && command.description.examples.length) embed.addField('❯ Examples', `\`${command.aliases[0]} ${command.description.examples.join(`\`\n\`${command.aliases[0]} `)}\``, true);

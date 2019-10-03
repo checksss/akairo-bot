@@ -13,7 +13,7 @@ export interface Tag extends Document {
     updatedAt: Date
 }
 
-const TagsModel = new Schema({
+const TagsSchema = new Schema({
     id: Number,
     user: String,
     guild: String,
@@ -26,4 +26,4 @@ const TagsModel = new Schema({
     updatedAt: Date
 });
 
-export const Tags = model<Tag>('Tags', TagsModel);
+export const Tags = model<Tag>('Tags', TagsSchema);

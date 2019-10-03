@@ -1,6 +1,6 @@
 import { Listener } from 'discord-akairo';
 import { Guild, GuildChannel, GuildMember, TextChannel, MessageEmbed, Message } from 'discord.js'
-import Settings from '../../structures/models/Settings';
+import { Settings } from '../../structures/models/Settings';
 import { stripIndents } from 'common-tags';
 
 export default class GuildCreateListener extends Listener {

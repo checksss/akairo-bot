@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
-const Settings = new mongoose_1.Schema({
+const SettingsSchema = new mongoose_1.Schema({
     id: String,
     name: String,
     prefix: String,
@@ -14,4 +14,4 @@ const Settings = new mongoose_1.Schema({
     moderators: [String],
     music: Boolean
 });
-exports.default = mongoose_1.model('Settings', Settings);
+exports.Settings = mongoose_1.model('Settings', SettingsSchema);

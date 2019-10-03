@@ -21,11 +21,14 @@ export default class StatsCommand extends Command {
 
     public async exec(message: Message): Promise<Message | Message[]> {
         const owner: User = await this.client.users.fetch(this.client.config.owner!);
+        const online = this.client.emojis.get(this.client.constants.shardOnlineEmoji);
+        const offline = this.client.emojis.get(this.client.constants.shardOfflineEmoji);
+
         const memAlloc = Math.round(process.memoryUsage().heapTotal  / 1024 / 1024);
         const memUsed = Math.round(process.memoryUsage().heapUsed  / 1024 / 1024);
         const memPercent = (memUsed / memAlloc * 100).toFixed(2);
-        let userCount = 0;
-        this.client.guilds.forEach(g => userCount += g.memberCount);
+
+        const userCount = this.client.guilds.reduce((m, g) => m + g.memberCount, 0);
         const embed: MessageEmbed = new MessageEmbed()
             .setColor(this.client.constants.infoEmbed)
             .setDescription(`**${this.client.user!.username} Statistics**`)
@@ -44,7 +47,7 @@ export default class StatsCommand extends Command {
                 '❯ Shards',
                 `${this.client.ws.shards.map(s => {
                     return stripIndents`
-                        ${s.id} • Status: ${shardStatus[s.status]} (${Math.round(s.ping)} ms)
+                        ${s.status === 0 ? online : offline} ${s.id} • Status: ${shardStatus[s.status]} (${Math.round(s.ping)} ms)
                     `
                 }).join('\n')}`,
                 true)

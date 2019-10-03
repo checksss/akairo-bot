@@ -1,23 +1,30 @@
-import { join } from 'path';
 import { AkairoClient, CommandHandler, InhibitorHandler, ListenerHandler, Flag } from 'discord-akairo';
-import { Message, Util, Collection, ColorResolvable, GuildMember, Guild, VoiceChannel, TextChannel, DMChannel, VoiceConnection } from 'discord.js';
-import express from 'express';
+import { Message, Util, Collection, ColorResolvable } from 'discord.js';
 
-import mongoose from 'mongoose';
+import mongoose, { Model, Document, Connection } from 'mongoose';
 import SettingsProvider from '../structures/providers/SettingsProvider';
 import { Tags } from '../structures/models/Tags';
+import { Stats } from '../structures/models/Stats';
+import { Files } from '../structures/models/Files';
+
 import { Logger } from '../structures/util/Logger';
+import { StatsServer } from '../structures/util/Server';
+
+import { join } from 'path';
 import 'dotenv/config';
 
 declare module 'discord-akairo' {
     interface AkairoClient {
         settings: SettingsProvider,
         commandHandler: CommandHandler,
+        inhibitorHandler: InhibitorHandler,
+        listenerHandler: ListenerHandler,
         config: AkairoBotOptions,
         cache: Collection<string, Message>
         audioStorage: any,
         logger: Logger,
-        constants: ClientConstants
+        constants: ClientConstants,
+        stats: Model<Document>
     }
 }
 
@@ -31,7 +38,10 @@ interface ClientConstants {
     memberAdd: ColorResolvable,
     memberRemove: ColorResolvable,
     guildAdd: ColorResolvable,
-    guildRemove: ColorResolvable
+    guildRemove: ColorResolvable,
+    downloadEmoji: string,
+    shardOnlineEmoji: string,
+    shardOfflineEmoji: string,
 }
 
 export default class AkairoBotClient extends AkairoClient {
@@ -55,7 +65,7 @@ export default class AkairoBotClient extends AkairoClient {
                 retries: 3,
                 time: 30000
             },
-            otherwise: ''
+            otherwise: '',
         }
     });
 
@@ -74,6 +84,8 @@ export default class AkairoBotClient extends AkairoClient {
     public logger: Logger;
 
     public constants: ClientConstants;
+
+    public statsServer!: StatsServer;
 
     public constructor(config: AkairoBotOptions) {
         super({ ownerID: config.owner }, {
@@ -115,6 +127,14 @@ export default class AkairoBotClient extends AkairoClient {
             return phrase || Flag.fail(phrase);
         });
 
+        this.commandHandler.resolver.addType('filename', async (message, phrase): Promise<any> => {
+            if (!phrase) phrase = '';
+            const exists = await Files.countDocuments({ id: phrase }).then((c: number) => c > 0);
+            if (exists) return Flag.fail(phrase);
+
+            return phrase;
+        });
+
         this.config = config;
 
         this.cache = new Collection<string, Message>();
@@ -126,7 +146,10 @@ export default class AkairoBotClient extends AkairoClient {
             memberAdd: [125, 235, 75],
             memberRemove: [245, 155, 55],
             guildAdd: [125, 235, 75],
-            guildRemove: [255, 80, 55]
+            guildRemove: [255, 80, 55],
+            downloadEmoji: '627646871954784257',
+            shardOnlineEmoji: '628783920665853972',
+            shardOfflineEmoji: '628784077025050650',
         }
     }
 
@@ -150,24 +173,23 @@ export default class AkairoBotClient extends AkairoClient {
         await this.settings.init();
         this.logger.log('Settings provider initialized');
 
-        const port = process.env.port || 8080;
-        express().all('*', (req: express.Request, res: express.Response) => {
-            const content = {
-                info: { guilds: this.guilds.size, users: this.guilds.reduce((a, b) => a + b.memberCount, 0), channels: this.shard!.broadcastEval('this.channels.size') },
-                client: { commands: this.commandHandler.modules.size, listeners: this.listenerHandler.modules.size, inhibitors: this.inhibitorHandler.modules.size },
-                shards: this.ws.shards.map(s => { return { id: s.id, status: s.status, ping: Math.round(s.ping) }; })
-            };
-
-            res.json(content);
-            res.status(this.ws.shards.every(s => s.status === 0) ? 200 : 500).end();
-        }).listen(port, () => Logger.log(`Listening on port ${port}`));
-
-        process.on('uncaughtException', (err) => this.logger.error(err.stack));
-        process.on('unhandledRejection', async (reason) => this.logger.error(`Unhandled Rejection: ${reason ? reason : 'no reason'}`));
+        this.statsServer = new StatsServer(this);
+        this.statsServer.init();
         
         this.on('shardReady', (id: number) => this.logger.info(`Shard ${id} ready`));
         this.on('shardDisconnect', (event, id: number) => this.logger.error(`Shard ${id} disconnected`));
-        this.on('shardError', (error: Error, id: number) => this.logger.error(`Shard ${id} error: ${error.message}`));
+        this.on('shardError', (error: Error, id: number) => this.logger.error(`Shard ${id} error: ${error.stack}`));
+
+        this.setInterval(() => {
+            if (this.ws.shards.every(s => s.ping === NaN) || this.uptime === null) return;
+            
+            return Stats.create({
+                date: Date.now(),
+                info: { guilds: this.guilds.size, users: this.guilds.reduce((a, b) => a + b.memberCount, 0), channels: this.channels.size },
+                client: { commands: this.commandHandler.modules.size, listeners: this.listenerHandler.modules.size, inhibitors: this.inhibitorHandler.modules.size },
+                shards: this.ws.shards.map(s => { return { id: s.id, status: s.status, ping: Math.round(s.ping) } } )
+            });
+        }, 6e4);
     }
 
     public async start(): Promise<string> {
@@ -177,6 +199,7 @@ export default class AkairoBotClient extends AkairoClient {
                 useFindAndModify: false,
                 useUnifiedTopology: true
             });
+
             this.logger.log('MongoDB connected');
         } catch (e) {
             this.logger.error(`Failed to connect to MongoDB`);

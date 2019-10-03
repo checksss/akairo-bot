@@ -15,7 +15,7 @@
         "module": "commonjs"
     },
     "include": [
-        "client/*",
+        "client/**/*",
         "commands/**/*",
         "inhibitors/**/*",
         "listeners/**/*",

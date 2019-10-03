@@ -3,14 +3,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const path_1 = require("path");
 const discord_akairo_1 = require("discord-akairo");
 const discord_js_1 = require("discord.js");
-const express_1 = __importDefault(require("express"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const SettingsProvider_1 = __importDefault(require("../structures/providers/SettingsProvider"));
 const Tags_1 = require("../structures/models/Tags");
+const Stats_1 = require("../structures/models/Stats");
+const Files_1 = require("../structures/models/Files");
 const Logger_1 = require("../structures/util/Logger");
+const Server_1 = require("../structures/util/Server");
+const path_1 = require("path");
 require("dotenv/config");
 class AkairoBotClient extends discord_akairo_1.AkairoClient {
     constructor(config) {
@@ -37,7 +39,7 @@ class AkairoBotClient extends discord_akairo_1.AkairoClient {
                     retries: 3,
                     time: 30000
                 },
-                otherwise: ''
+                otherwise: '',
             }
         });
         this.inhibitorHandler = new discord_akairo_1.InhibitorHandler(this, {
@@ -80,6 +82,14 @@ class AkairoBotClient extends discord_akairo_1.AkairoClient {
                 phrase += `\n${message.attachments.first().url}`;
             return phrase || discord_akairo_1.Flag.fail(phrase);
         });
+        this.commandHandler.resolver.addType('filename', async (message, phrase) => {
+            if (!phrase)
+                phrase = '';
+            const exists = await Files_1.Files.countDocuments({ id: phrase }).then((c) => c > 0);
+            if (exists)
+                return discord_akairo_1.Flag.fail(phrase);
+            return phrase;
+        });
         this.config = config;
         this.cache = new discord_js_1.Collection();
         this.logger = Logger_1.Logger;
@@ -88,7 +98,10 @@ class AkairoBotClient extends discord_akairo_1.AkairoClient {
             memberAdd: [125, 235, 75],
             memberRemove: [245, 155, 55],
             guildAdd: [125, 235, 75],
-            guildRemove: [255, 80, 55]
+            guildRemove: [255, 80, 55],
+            downloadEmoji: '627646871954784257',
+            shardOnlineEmoji: '628783920665853972',
+            shardOfflineEmoji: '628784077025050650',
         };
     }
     async _init() {
@@ -108,21 +121,21 @@ class AkairoBotClient extends discord_akairo_1.AkairoClient {
         this.settings = new SettingsProvider_1.default();
         await this.settings.init();
         this.logger.log('Settings provider initialized');
-        const port = process.env.port || 8080;
-        express_1.default().all('*', (req, res) => {
-            const content = {
-                info: { guilds: this.guilds.size, users: this.guilds.reduce((a, b) => a + b.memberCount, 0), channels: this.shard.broadcastEval('this.channels.size') },
-                client: { commands: this.commandHandler.modules.size, listeners: this.listenerHandler.modules.size, inhibitors: this.inhibitorHandler.modules.size },
-                shards: this.ws.shards.map(s => { return { id: s.id, status: s.status, ping: Math.round(s.ping) }; })
-            };
-            res.json(content);
-            res.status(this.ws.shards.every(s => s.status === 0) ? 200 : 500).end();
-        }).listen(port, () => Logger_1.Logger.log(`Listening on port ${port}`));
-        process.on('uncaughtException', (err) => this.logger.error(err.stack));
-        process.on('unhandledRejection', async (reason) => this.logger.error(`Unhandled Rejection: ${reason ? reason : 'no reason'}`));
+        this.statsServer = new Server_1.StatsServer(this);
+        this.statsServer.init();
         this.on('shardReady', (id) => this.logger.info(`Shard ${id} ready`));
         this.on('shardDisconnect', (event, id) => this.logger.error(`Shard ${id} disconnected`));
-        this.on('shardError', (error, id) => this.logger.error(`Shard ${id} error: ${error.message}`));
+        this.on('shardError', (error, id) => this.logger.error(`Shard ${id} error: ${error.stack}`));
+        this.setInterval(() => {
+            if (this.ws.shards.every(s => s.ping === NaN) || this.uptime === null)
+                return;
+            return Stats_1.Stats.create({
+                date: Date.now(),
+                info: { guilds: this.guilds.size, users: this.guilds.reduce((a, b) => a + b.memberCount, 0), channels: this.channels.size },
+                client: { commands: this.commandHandler.modules.size, listeners: this.listenerHandler.modules.size, inhibitors: this.inhibitorHandler.modules.size },
+                shards: this.ws.shards.map(s => { return { id: s.id, status: s.status, ping: Math.round(s.ping) }; })
+            });
+        }, 6e4);
     }
     async start() {
         try {

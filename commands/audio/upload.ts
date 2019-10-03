@@ -7,8 +7,8 @@ import fs from 'fs';
 
 export default class UploadCommand extends Command {
     public constructor() {
-        super('upload', {
-            aliases: ['upload'],
+        super('-upload', {
+            aliases: ['-upload'],
             description: {
                 content: 'Uploads a supported audio file.'
             },

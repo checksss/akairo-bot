@@ -43,11 +43,3 @@ class TagShowCommand extends discord_akairo_1.Command {
     }
 }
 exports.default = TagShowCommand;
-/* interface Tag extends Document {
-    aliases: string[],
-    user: string,
-    guild: string,
-    name: string,
-    content: string,
-    uses: number
-} */ 

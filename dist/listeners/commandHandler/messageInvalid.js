@@ -11,10 +11,13 @@ class MessageInvalidListener extends discord_akairo_1.Listener {
     }
     async exec(message) {
         if (message.guild && message.util.parsed.prefix) {
-            if (!message.util.parsed.alias || !message.util.parsed.afterPrefix)
+            const prefix = this.client.commandHandler.modules.get('prefix');
+            if (!message.util.parsed.afterPrefix)
+                return this.client.commandHandler.runCommand(message, prefix, ['get']);
+            if (!message.util.parsed.alias)
                 return;
-            const command = this.client.commandHandler.modules.get('tag-show');
-            return this.client.commandHandler.runCommand(message, command, await command.parse(message, message.util.parsed.afterPrefix));
+            const tagShow = this.client.commandHandler.modules.get('tag-show');
+            return this.client.commandHandler.runCommand(message, tagShow, await tagShow.parse(message, message.util.parsed.afterPrefix));
         }
     }
 }

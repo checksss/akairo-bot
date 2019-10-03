@@ -1,10 +1,10 @@
 import { Provider } from 'discord-akairo';
 import { Guild } from 'discord.js';
-import mongoose from 'mongoose';
-import Settings from '../models/Settings';
+import { Document, Model, Query } from 'mongoose';
+import { Settings } from '../models/Settings';
 
 export default class SettingsProvider extends Provider {
-    public model: mongoose.Model<mongoose.Document>;
+    public model: Model<Document>;
 
     public constructor() {
         super();
@@ -28,7 +28,7 @@ export default class SettingsProvider extends Provider {
         return defaultValue;
     }
 
-    public async set(guild: string | Guild, key: string, value: any): Promise<mongoose.Query<mongoose.Document>> {
+    public async set(guild: string | Guild, key: string, value: any): Promise<Query<Document>> {
         const id: string = this.getGuildId(guild);
         const data: any = this.items.get(id) || {};
         data[key] = value;
