@@ -6,23 +6,25 @@ import { Stats } from '../models/Stats';
 import { Files } from '../models/Files';
 
 import favicon from 'serve-favicon';
-import readChunk from 'read-chunk';
 import fileType from 'file-type';
 import { join } from 'path';
 
-export class StatsServer implements StatsServer {
+export class Server implements StatsServer {
     public app: Express;
+    public port: String | Number;
+    public attachmentsBase: String;
     private model: Model<Document>;
     private client: AkairoBotClient;
 
     public constructor(client: AkairoBotClient) {
         this.app = express();
+        this.port = process.env.port || 80;
+        this.attachmentsBase = `http://akairo.org${this.port===80?'':`:${this.port}`}/`
         this.model = Stats;
         this.client = client;
     }
 
     public init(): void {
-        const port = process.env.port || 8080;
         this.app.get('/', async (req: Request, res: Response): Promise<any> => {
             if (this.client.uptime === null) return res.status(200).send('Client not started');
             this.client.logger.log(`Stats query: ${req.method} ${req.url}`);
@@ -35,16 +37,17 @@ export class StatsServer implements StatsServer {
 
             res.json(content);
             res.status(this.client.ws.shards.every(s => s.status === 0) ? 200 : 500).end();
-        }).listen(port, () => this.client.logger.log(`Stats server initialized: ${port}`));
+        });
 
         this.app.use(favicon(join(__dirname, '..', '..', '..', 'client', 'data', 'avatar.ico')));
 
-        this.app.get('/:date', async (req: Request, res: Response): Promise<any> => {
+        this.app.get('/stats/:date', async (req: Request, res: Response): Promise<any> => {
+            // @ts-ignore
             if (isNaN(req.params.date)) return res.status(400).send('Invalid date').end();
             const time = parseInt(req.params.date);
 
-            const stat: Stats = (await Stats.find({ date: req.params.date }).limit(1))[0];
-            if (stat === null || stat === undefined) return res.status(404).send('Statistics entry not found. Use /search/:date to search for an entry.').end();
+            const stat = await Stats.findOne({ date: time });
+            if (!stat) return res.status(404).send('Statistics entry not found. Use /search/:date to search for an entry.').end();
 
             const content = {
                 info: { guilds: stat.info.guilds, users: stat.info.users, channels: stat.info.channels },
@@ -58,14 +61,17 @@ export class StatsServer implements StatsServer {
             res.status(200).send('Dashboard for Akairo Bot').end();
         });
 
-        this.app.all('/data/:id', async (req: Request, res: Response): Promise<any> => {
+        this.app.all('/:id', async (req: Request, res: Response): Promise<any> => {
             const file = await Files.findOne({ id: req.params.id });
-            if (file === undefined) return res.status(404).send('File not found');
+            if (!file) return res.status(404).send('File not found');
 
             const type = fileType(file!.data);
             res.header('Content-Type', type!.mime);
+            if (!type!.mime) res.header(`Content-Disposition: attachment; filename=${file!.filename}`);
             return res.status(200).send(file!.data).end();
-        })
+        });
+
+        this.app.listen(this.port, () => this.client.logger.log(`Server initialized: ${this.port}`));
     }
 
     public addPath(method: ExpressMethods, path: string, callback: RequestHandler): Express {
@@ -73,7 +79,7 @@ export class StatsServer implements StatsServer {
     }
 }
 
-type ExpressMethods = 'get' | 'post' | 'put' | 'delete';
+type ExpressMethods = 'get' | 'post' | 'put' | 'delete' | 'all' | 'use';
 
 export interface StatsServer {
     app: Express;
