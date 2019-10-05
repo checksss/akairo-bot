@@ -8,7 +8,7 @@ import { Stats } from '../structures/models/Stats';
 import { Files } from '../structures/models/Files';
 
 import { Logger } from '../structures/util/Logger';
-import { StatsServer } from '../structures/util/Server';
+import { Server } from '../structures/util/Server';
 
 import { join } from 'path';
 import 'dotenv/config';
@@ -24,7 +24,8 @@ declare module 'discord-akairo' {
         audioStorage: any,
         logger: Logger,
         constants: ClientConstants,
-        stats: Model<Document>
+        stats: Model<Document>,
+        server: Server
     }
 }
 
@@ -85,7 +86,7 @@ export default class AkairoBotClient extends AkairoClient {
 
     public constants: ClientConstants;
 
-    public statsServer!: StatsServer;
+    public server!: Server;
 
     public constructor(config: AkairoBotOptions) {
         super({ ownerID: config.owner }, {
@@ -173,8 +174,8 @@ export default class AkairoBotClient extends AkairoClient {
         await this.settings.init();
         this.logger.log('Settings provider initialized');
 
-        this.statsServer = new StatsServer(this);
-        this.statsServer.init();
+        this.server = new Server(this);
+        this.server.init();
         
         this.on('shardReady', (id: number) => this.logger.info(`Shard ${id} ready`));
         this.on('shardDisconnect', (event, id: number) => this.logger.error(`Shard ${id} disconnected`));

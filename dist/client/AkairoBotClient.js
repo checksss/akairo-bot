@@ -121,8 +121,8 @@ class AkairoBotClient extends discord_akairo_1.AkairoClient {
         this.settings = new SettingsProvider_1.default();
         await this.settings.init();
         this.logger.log('Settings provider initialized');
-        this.statsServer = new Server_1.StatsServer(this);
-        this.statsServer.init();
+        this.server = new Server_1.Server(this);
+        this.server.init();
         this.on('shardReady', (id) => this.logger.info(`Shard ${id} ready`));
         this.on('shardDisconnect', (event, id) => this.logger.error(`Shard ${id} disconnected`));
         this.on('shardError', (error, id) => this.logger.error(`Shard ${id} error: ${error.stack}`));
