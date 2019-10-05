@@ -65,7 +65,7 @@ export default class FileCommand extends Command {
         } else if (method === 'show') {
             const file = await Files.findOne({ user: message.author!.id, id: filename });
             if (!file) return message.util!.reply(`no file with the name **${filename}** was found.`);
-            return message.util!.reply(`${this.client.statsServer.attachmentsBase}${file.id}`);
+            return message.util!.reply(`${this.client.server.attachmentsBase}${file.id}`);
         }
     }
 }

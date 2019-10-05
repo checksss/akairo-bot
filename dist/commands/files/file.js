@@ -68,7 +68,7 @@ class FileCommand extends discord_akairo_1.Command {
             const file = await Files_1.Files.findOne({ user: message.author.id, id: filename });
             if (!file)
                 return message.util.reply(`no file with the name **${filename}** was found.`);
-            return message.util.reply(`${this.client.statsServer.attachmentsBase}${file.id}`);
+            return message.util.reply(`${this.client.server.attachmentsBase}${file.id}`);
         }
     }
 }
