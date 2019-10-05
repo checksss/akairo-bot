@@ -75,7 +75,7 @@
     "sift": "^8.5.0",
     "simple-youtube-api": "^5.2.1",
     "sliced": "^1.0.1",
-    "source-map": "^0.6.1",
+    "source-map": "^0.7.3",
     "source-map-support": "^0.5.13",
     "statuses": "^1.5.0",
     "supports-color": "^7.1.0",
