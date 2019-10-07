@@ -38,6 +38,8 @@ class TagAddCommand extends discord_akairo_1.Command {
             return message.util.reply('tag names can\'t be more than 1900 characters long.');
         if (content && content.length >= 1950)
             return message.util.reply('tag content can\'t be more than 1950 characters long.');
+        if (this.handler.modules.has(name))
+            return message.util.reply('tags that share a name with a command won\'t work.');
         await Tags_1.Tags.create({
             user: message.author.id,
             guild: message.guild.id,
