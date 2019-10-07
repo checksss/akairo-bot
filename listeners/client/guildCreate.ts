@@ -50,6 +50,7 @@ export default class GuildCreateListener extends Listener {
             memberLog: '',
             modLog: '',
             tokenFiltering: true,
+            reactionDownloading: false,
             blacklist: [],
             moderators: [guildOwner.id]
         }, (err: any): Promise<Message> => {

@@ -22,7 +22,8 @@ class ToggleCommand extends discord_akairo_1.Command {
     *args() {
         const method = yield {
             type: [
-                ['toggle-token-filtering', 'tokenFiltering', 'token']
+                ['toggle-token-filtering', 'tokenFiltering', 'token'],
+                ['toggle-reaction-downloading', 'reactionDownloading', 'reaction']
             ],
             otherwise: async (msg) => {
                 const prefix = await this.handler.prefix(msg);

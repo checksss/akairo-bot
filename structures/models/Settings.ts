@@ -10,6 +10,7 @@ export interface Settings extends Document {
     memberLog: string,
     modLog: string,
     tokenFiltering: boolean,
+    reactionDownloading: boolean,
     blacklist: string[],
     moderators: string[],
     music: boolean
@@ -24,6 +25,7 @@ const SettingsSchema = new Schema({
     memberLog: String,
     modLog: String,
     tokenFiltering: Boolean,
+    reactionDownloading: Boolean,
     blacklist: [String],
     moderators: [String],
     music: Boolean

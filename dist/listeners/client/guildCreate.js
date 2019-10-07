@@ -47,6 +47,7 @@ class GuildCreateListener extends discord_akairo_1.Listener {
             memberLog: '',
             modLog: '',
             tokenFiltering: true,
+            reactionDownloading: false,
             blacklist: [],
             moderators: [guildOwner.id]
         }, (err) => {

@@ -10,6 +10,7 @@ const SettingsSchema = new mongoose_1.Schema({
     memberLog: String,
     modLog: String,
     tokenFiltering: Boolean,
+    reactionDownloading: Boolean,
     blacklist: [String],
     moderators: [String],
     music: Boolean

@@ -23,7 +23,8 @@ export default class ToggleCommand extends Command {
     public *args(): object {
         const method = yield {
             type: [
-                ['toggle-token-filtering', 'tokenFiltering', 'token']
+                ['toggle-token-filtering', 'tokenFiltering', 'token'],
+                ['toggle-reaction-downloading', 'reactionDownloading', 'reaction']
             ],
             otherwise: async (msg: Message): Promise<string> => {
                 const prefix = await (this.handler.prefix as PrefixSupplier)(msg);
