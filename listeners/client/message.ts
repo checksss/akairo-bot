@@ -1,5 +1,6 @@
 import { Listener } from 'discord-akairo';
-import { Message, MessageReaction, User } from 'discord.js';
+import { Message } from 'discord.js';
+import fetch from 'node-fetch';
 
 export default class MessageListener extends Listener {
     public constructor() {
@@ -18,7 +19,7 @@ export default class MessageListener extends Listener {
             if (!reactionDownloading || message.attachments.size < 1) return;
             if (message.attachments.first()!.size > 2 * 1024 * 1024) return;
 
-            const emoji = await this.client.emojis.get(this.client.constants.downloadEmoji);
+            const emoji = this.client.emojis.get(this.client.constants.downloadEmoji);
             if (!emoji) return;
             message.react(emoji);
         }

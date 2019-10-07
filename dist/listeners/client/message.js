@@ -17,7 +17,7 @@ class MessageListener extends discord_akairo_1.Listener {
                 return;
             if (message.attachments.first().size > 2 * 1024 * 1024)
                 return;
-            const emoji = await this.client.emojis.get(this.client.constants.downloadEmoji);
+            const emoji = this.client.emojis.get(this.client.constants.downloadEmoji);
             if (!emoji)
                 return;
             message.react(emoji);
