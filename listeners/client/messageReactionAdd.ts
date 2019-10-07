@@ -12,7 +12,7 @@ export default class MessageReactionAddListener extends Listener {
     }
 
     public async exec(reaction: MessageReaction, user: User): Promise<Message | void> {
-        const custom = reaction.emoji.createdTimestamp! ? true : false;
+        const custom = reaction.emoji.createdAt! ? true : false;
         if (!user.bot && custom && reaction.emoji.id === this.client.constants.downloadEmoji) {
             const command = this.client.commandHandler.modules.get('upload');
             return this.client.commandHandler.runCommand(reaction.message, command!, [response]);

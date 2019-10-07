@@ -11,7 +11,7 @@ class MessageReactionAddListener extends discord_akairo_1.Listener {
         });
     }
     async exec(reaction, user) {
-        const custom = reaction.emoji.createdTimestamp ? true : false;
+        const custom = reaction.emoji.createdAt ? true : false;
         if (!user.bot && custom && reaction.emoji.id === this.client.constants.downloadEmoji) {
             const command = this.client.commandHandler.modules.get('upload');
             return this.client.commandHandler.runCommand(reaction.message, command, [express_1.response]);
