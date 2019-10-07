@@ -99,6 +99,7 @@ class AkairoBotClient extends discord_akairo_1.AkairoClient {
             memberRemove: [245, 155, 55],
             guildAdd: [125, 235, 75],
             guildRemove: [255, 80, 55],
+            banAdd: [255, 80, 55],
             downloadEmoji: '627646871954784257',
             shardOnlineEmoji: '628783920665853972',
             shardOfflineEmoji: '628784077025050650',
