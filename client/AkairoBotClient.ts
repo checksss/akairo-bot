@@ -4,24 +4,25 @@ import { Message, Util, Collection, ColorResolvable, } from 'discord.js';
 import mongoose, { Model, Document, } from 'mongoose';
 import { SettingsProvider, } from '../structures/providers';
 import { Files, Stats, Tags, } from '../structures/models';
-import { Logger, Server, } from '../structures/util';
+import { Logger, Server, Utils, } from '../structures/util';
 
 import { join } from 'path';
 import 'dotenv/config';
 
 declare module 'discord-akairo' {
     interface AkairoClient {
-        settings: SettingsProvider,
+        audioStorage: any,
+        cache: Collection<string, Message>,
         commandHandler: CommandHandler,
+        config: AkairoBotOptions,
+        constants: ClientConstants,
         inhibitorHandler: InhibitorHandler,
         listenerHandler: ListenerHandler,
-        config: AkairoBotOptions,
-        cache: Collection<string, Message>
-        audioStorage: any,
         logger: Logger,
-        constants: ClientConstants,
+        server: Server,
+        settings: SettingsProvider,
         stats: Model<Document>,
-        server: Server
+        utils: ClientUtils,
     }
 }
 
@@ -40,6 +41,10 @@ interface ClientConstants {
     downloadEmoji: string,
     shardOnlineEmoji: string,
     shardOfflineEmoji: string,
+}
+
+interface ClientUtils {
+
 }
 
 export default class AkairoBotClient extends AkairoClient {
@@ -150,6 +155,8 @@ export default class AkairoBotClient extends AkairoClient {
             shardOnlineEmoji: '628783920665853972',
             shardOfflineEmoji: '628784077025050650',
         }
+
+        this.utils = Utils;
     }
 
     private async _init(): Promise<void> {

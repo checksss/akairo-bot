@@ -101,6 +101,7 @@ class AkairoBotClient extends discord_akairo_1.AkairoClient {
             shardOnlineEmoji: '628783920665853972',
             shardOfflineEmoji: '628784077025050650',
         };
+        this.utils = util_1.Utils;
     }
     async _init() {
         this.commandHandler.useInhibitorHandler(this.inhibitorHandler);
