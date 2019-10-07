@@ -27,17 +27,23 @@ class EvalCommand extends discord_akairo_1.Command {
             args: [
                 {
                     id: 'code',
-                    match: 'content',
+                    match: 'rest',
                     type: 'sring',
                     prompt: {
                         start: (message) => `${message.author}, what would you like to evaluate?`
                     }
-                }
-            ]
+                },
+                {
+                    id: 'noreturn',
+                    type: 'boolean',
+                    match: 'flag',
+                    flag: ['--noreturn', '-nr'],
+                },
+            ],
         });
         this.lastResult = null;
     }
-    async exec(message, { code }) {
+    async exec(message, { code, noreturn }) {
         const { client, lastResult } = this;
         let hrDiff;
         try {
@@ -50,7 +56,8 @@ class EvalCommand extends discord_akairo_1.Command {
         }
         this.hrStart = process.hrtime();
         const result = this._result(this.lastResult, hrDiff, code);
-        // @ts-ignore
+        if (noreturn)
+            return message.util.send(`*Executed in **${hrDiff[0] > 0 ? `${hrDiff[0]}s ` : ''}${hrDiff[1] / 1000000}ms.***`);
         if (Array.isArray(result))
             return result.map(async (res) => message.util.send(res));
         return message.util.send(result);

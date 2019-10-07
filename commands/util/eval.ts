@@ -27,17 +27,23 @@ export default class EvalCommand extends Command {
             args: [
                 {
                     id: 'code',
-                    match: 'content',
+                    match: 'rest',
                     type: 'sring',
                     prompt: {
                         start: (message: Message): string => `${message.author}, what would you like to evaluate?`
                     }
-                }
-            ]
+                },
+                {
+                    id: 'noreturn',
+                    type: 'boolean',
+                    match: 'flag',
+                    flag: ['--noreturn', '-nr'],
+                },
+            ],
         });
     }
 
-    public async exec(message: Message, { code }: { code: string }): Promise<Message | Message[]> {
+    public async exec(message: Message, { code, noreturn }: { code: string, noreturn: boolean }): Promise<Message | Message[] | Promise<Message | Message[]>[]> {
         const { client, lastResult } = this;
         let hrDiff;
         try {
@@ -50,7 +56,8 @@ export default class EvalCommand extends Command {
 
         this.hrStart = process.hrtime();
         const result = this._result(this.lastResult, hrDiff, code);
-        // @ts-ignore
+
+        if (noreturn) return message.util!.send(`*Executed in **${hrDiff[0] > 0 ? `${hrDiff[0]}s ` : ''}${hrDiff[1] / 1000000}ms.***`);
         if (Array.isArray(result)) return result.map(async (res): Promise<Message | Message[]> => message.util!.send(res));
         return message.util!.send(result);
     }
