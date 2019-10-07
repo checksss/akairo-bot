@@ -1,6 +1,5 @@
 import { Listener } from 'discord-akairo';
 import { Message } from 'discord.js';
-import fetch from 'node-fetch';
 
 export default class MessageListener extends Listener {
     public constructor() {
