@@ -7,7 +7,6 @@ class ReadyListener extends discord_akairo_1.Listener {
             emitter: 'client',
             category: 'client',
             event: 'ready',
-            type: 'once'
         });
     }
     async exec() {

@@ -6,7 +6,6 @@ export default class ReadyListener extends Listener {
             emitter: 'client',
             category: 'client',
             event: 'ready',
-            type: 'once'
         });
     }
 
