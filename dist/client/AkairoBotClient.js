@@ -6,12 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const discord_akairo_1 = require("discord-akairo");
 const discord_js_1 = require("discord.js");
 const mongoose_1 = __importDefault(require("mongoose"));
-const SettingsProvider_1 = __importDefault(require("../structures/providers/SettingsProvider"));
-const Tags_1 = require("../structures/models/Tags");
-const Stats_1 = require("../structures/models/Stats");
-const Files_1 = require("../structures/models/Files");
-const Logger_1 = require("../structures/util/Logger");
-const Server_1 = require("../structures/util/Server");
+const providers_1 = require("../structures/providers");
+const models_1 = require("../structures/models");
+const util_1 = require("../structures/util");
 const path_1 = require("path");
 require("dotenv/config");
 class AkairoBotClient extends discord_akairo_1.AkairoClient {
@@ -54,9 +51,9 @@ class AkairoBotClient extends discord_akairo_1.AkairoClient {
             phrase = discord_js_1.Util.cleanContent(phrase.toLowerCase(), message);
             let tag;
             try {
-                tag = await Tags_1.Tags.findOne({ guild: message.guild.id, name: phrase });
+                tag = await models_1.Tags.findOne({ guild: message.guild.id, name: phrase });
                 if (!tag)
-                    tag = await Tags_1.Tags.findOne({ guild: message.guild.id, aliases: phrase });
+                    tag = await models_1.Tags.findOne({ guild: message.guild.id, aliases: phrase });
             }
             catch (_a) { }
             return tag || discord_akairo_1.Flag.fail(phrase);
@@ -67,9 +64,9 @@ class AkairoBotClient extends discord_akairo_1.AkairoClient {
             phrase = discord_js_1.Util.cleanContent(phrase, message);
             let tag;
             try {
-                tag = await Tags_1.Tags.findOne({ guild: message.guild.id, name: phrase });
+                tag = await models_1.Tags.findOne({ guild: message.guild.id, name: phrase });
                 if (!tag)
-                    tag = await Tags_1.Tags.findOne({ guild: message.guild.id, aliases: phrase });
+                    tag = await models_1.Tags.findOne({ guild: message.guild.id, aliases: phrase });
             }
             catch (_a) { }
             return tag ? discord_akairo_1.Flag.fail(phrase) : phrase;
@@ -85,14 +82,14 @@ class AkairoBotClient extends discord_akairo_1.AkairoClient {
         this.commandHandler.resolver.addType('filename', async (message, phrase) => {
             if (!phrase)
                 phrase = '';
-            const exists = await Files_1.Files.countDocuments({ id: phrase }).then((c) => c > 0);
+            const exists = await models_1.Files.countDocuments({ id: phrase }).then((c) => c > 0);
             if (exists)
                 return discord_akairo_1.Flag.fail(phrase);
             return phrase;
         });
         this.config = config;
         this.cache = new discord_js_1.Collection();
-        this.logger = Logger_1.Logger;
+        this.logger = util_1.Logger;
         this.constants = {
             infoEmbed: [155, 200, 200],
             memberAdd: [125, 235, 75],
@@ -119,10 +116,10 @@ class AkairoBotClient extends discord_akairo_1.AkairoClient {
         this.logger.log(`Inhibitors loaded: ${this.inhibitorHandler.modules.size}`);
         this.listenerHandler.loadAll();
         this.logger.log(`Listeners loaded: ${this.listenerHandler.modules.size}`);
-        this.settings = new SettingsProvider_1.default();
+        this.settings = new providers_1.SettingsProvider();
         await this.settings.init();
         this.logger.log('Settings provider initialized');
-        this.server = new Server_1.Server(this);
+        this.server = new util_1.Server(this);
         this.server.init();
         this.on('shardReady', (id) => this.logger.info(`Shard ${id} ready`));
         this.on('shardDisconnect', (event, id) => this.logger.error(`Shard ${id} disconnected`));
@@ -130,7 +127,7 @@ class AkairoBotClient extends discord_akairo_1.AkairoClient {
         this.setInterval(() => {
             if (this.ws.shards.every(s => s.ping === NaN) || this.uptime === null)
                 return;
-            return Stats_1.Stats.create({
+            return models_1.Stats.create({
                 date: Date.now(),
                 info: { guilds: this.guilds.size, users: this.guilds.reduce((a, b) => a + b.memberCount, 0), channels: this.channels.size },
                 client: { commands: this.commandHandler.modules.size, listeners: this.listenerHandler.modules.size, inhibitors: this.inhibitorHandler.modules.size },

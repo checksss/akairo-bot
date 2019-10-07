@@ -1,14 +1,10 @@
-import { AkairoClient, CommandHandler, InhibitorHandler, ListenerHandler, Flag } from 'discord-akairo';
-import { Message, Util, Collection, ColorResolvable } from 'discord.js';
+import { AkairoClient, CommandHandler, InhibitorHandler, ListenerHandler, Flag, } from 'discord-akairo';
+import { Message, Util, Collection, ColorResolvable, } from 'discord.js';
 
-import mongoose, { Model, Document, Connection } from 'mongoose';
-import SettingsProvider from '../structures/providers/SettingsProvider';
-import { Tags } from '../structures/models/Tags';
-import { Stats } from '../structures/models/Stats';
-import { Files } from '../structures/models/Files';
-
-import { Logger } from '../structures/util/Logger';
-import { Server } from '../structures/util/Server';
+import mongoose, { Model, Document, } from 'mongoose';
+import { SettingsProvider, } from '../structures/providers';
+import { Files, Stats, Tags, } from '../structures/models';
+import { Logger, Server, } from '../structures/util';
 
 import { join } from 'path';
 import 'dotenv/config';
