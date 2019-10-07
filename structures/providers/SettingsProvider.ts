@@ -3,7 +3,7 @@ import { Guild } from 'discord.js';
 import { Document, Model, Query } from 'mongoose';
 import { Settings } from '../models/Settings';
 
-export default class SettingsProvider extends Provider {
+export class SettingsProvider extends Provider {
     public model: Model<Document>;
 
     public constructor() {

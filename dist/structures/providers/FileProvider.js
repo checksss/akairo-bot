@@ -33,4 +33,4 @@ class FileProvider {
         return await Files_1.Files.deleteOne({ id });
     }
 }
-exports.default = FileProvider;
+exports.FileProvider = FileProvider;

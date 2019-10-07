@@ -2,7 +2,7 @@ import { Collection } from 'discord.js';
 import { Document, Model, Query } from 'mongoose';
 import { Files } from '../models/Files';
 
-export default class FileProvider {
+export class FileProvider {
     public model: Model<Document>;
     public items: Collection<string, Buffer>;
 

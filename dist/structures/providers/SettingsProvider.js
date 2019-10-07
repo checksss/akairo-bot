@@ -50,4 +50,4 @@ class SettingsProvider extends discord_akairo_1.Provider {
         throw new TypeError('Invalid guild specified. Must be a Guild instance, guild ID, "global", or null.');
     }
 }
-exports.default = SettingsProvider;
+exports.SettingsProvider = SettingsProvider;
