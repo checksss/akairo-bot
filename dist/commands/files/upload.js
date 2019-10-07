@@ -50,7 +50,7 @@ class UploadCommand extends discord_akairo_1.Command {
             filename: message.attachments.first().name,
             data: Buffer.from(res)
         });
-        return message.util.reply(`file uploaded: <http://akairo.org:8080/data/${name}>`);
+        return message.util.reply(`file uploaded: <${this.client.server.attachmentsBase}${name}>`);
     }
 }
 exports.default = UploadCommand;
