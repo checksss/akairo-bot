@@ -1,7 +1,7 @@
 import AkairoClient from '../../client/AkairoBotClient';
 import { Message, MessageReaction, ReactionEmoji, User } from 'discord.js';
 
-export default class Utils {
+export class Utils {
     static async checkDownload(client: AkairoClient, message: Message): Promise<void> {
         const attachment = message.attachments.find(x => ['.mp3'].includes(x.name!.slice(-4)));
         if (!attachment) return;

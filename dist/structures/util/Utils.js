@@ -30,4 +30,4 @@ class Utils {
         });
     }
 }
-exports.default = Utils;
+exports.Utils = Utils;
