@@ -4,11 +4,16 @@ Akairo Bot is a discord-akairo-based discord bot written in TypeScript that incl
 ## Commands
 A list of some basic commands and short descriptions
 * Info - Gives useful information about something:
-  * Channel
-  * Emoji
-  * Role
-  * Server
-  * Stats
+ 	* Channel
+ 	* Emoji
+ 	* Role
+ 	* Server
+ 	* Stats
+* Moderation:
+	* Warn
+	* Kick
+	* Softban
+	* Ban
 * Utils - Miscellaneous utilities:
 	* Blacklist - Inhibits/Allows a user to use the bot
 	* Delete - Deletes a specified number of messages
@@ -25,8 +30,14 @@ A list of some basic commands and short descriptions
 	* Search - Searches for tags
 	* Show - Shows a tag
 	* Source - Shows a tag's source
-* Non-Command Features
+* Files:
+	* Upload - Upload any file (up to 2MB)
+	* Show - Provides a link to an existing file
+	* Delete - Deletes a file
+	* List - Lists a user's file
+* Non-Command Features - (Optional)
 	* Message Deletion via Reaction - React with :wastebasket: to delete a message
+	* File Downloading via Reaction - React with :download: to upload a file
 	* Token Filtering - Prevents tokens from being sent in a channel
 	* Member Logging - Logs members joined/left
 
@@ -34,6 +45,9 @@ A list of some basic commands and short descriptions
 The tags system is an easy-to-use set of commands that allows users to create their own 'tags', which act like custom commands. Tags are useful for storing information about a guild or paragraph-style messages that you only want to type once. The tags are sharable across members of the same guild, but not different guilds.
 
 Tags also support message attachments, like pictures, videos, audio files, and other files. The content of the tags is the solely the property of the tag's creator. The tags are stored safely in a database, and aren't viewed by me.
+
+## Files
+The files system is an easy-to-use set of commands that allows users to upload their own files. This isn't meant to be a file storage system, but can be used to store more than just images. The files are shareable across multiple guilds and can be downloaded externally by going to the provided URL.
 
 ## Plans
 * Add a music streaming system
