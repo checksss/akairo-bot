@@ -26,8 +26,8 @@ export default class EmojiInfoCommand extends Command {
                     match: 'content',
                     type: async (message, content): Promise<any> => {
                         if (emojiRegex.test(content)) [, content] = content.match(emojiRegex)!;
-                        if (!isNaN(content as any)) return message.guild!.emojis.get(content);
-                        return message.guild!.emojis.find((e: GuildEmoji): boolean => e.name === content) || emojis.find(content);
+                        if (!isNaN(content as any)) return message.guild!.emojis.cache.get(content);
+                        return message.guild!.emojis.cache.find((e: GuildEmoji): boolean => e.name === content) || emojis.find(content);
                     },
                     prompt: {
                         start: (message: Message): string => `${message.author}, what emoji do you want information about`,
@@ -47,7 +47,7 @@ export default class EmojiInfoCommand extends Command {
             embed.setThumbnail(emoji.url);
             embed.addField(
                 '❯ Info',
-				stripIndents`
+                stripIndents`
 				• Identifier: \`<${emoji.identifier}>\`
 				• Creation Date: ${moment.utc(emoji.createdAt).format('YYYY/MM/DD hh:mm:ss')}
                 • URL: ${emoji.url}
@@ -56,7 +56,7 @@ export default class EmojiInfoCommand extends Command {
             embed.setDescription(`Info about ${emoji.emoji}`);
             embed.addField(
                 '❯ Info',
-				stripIndents`
+                stripIndents`
 				• Name: \`${emoji.key}\`
 				• Raw: \`${emoji.emoji}\`
 				• Unicode: \`${punycode.ucs2.decode(emoji.emoji).map((e: any): string => `\\u${e.toString(16).toUpperCase().padStart(4, '0')}`).join('')}\`

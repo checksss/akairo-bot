@@ -68,9 +68,9 @@ export default class TagAliasCommand extends Command {
             return message.util!.reply('you have to either supply `--add` or `--del.`');
         }
 
-        const tag = await Tags.findOne(first);
+        const tag = await Tags.findOne({ guild: message.guild!.id, name: String(first.name) });
         first.last_modified = message.author!.id;
-        await Tags.updateOne(tag, first);
+        await Tags.updateOne(tag!, first);
 
         return message.util!.reply(`alias ${second.substring(0, 1900)} ${add ? 'added to' : 'deleted from'} tag ${first.name}.`);
     }

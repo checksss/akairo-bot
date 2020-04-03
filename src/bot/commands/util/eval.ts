@@ -44,7 +44,6 @@ export default class EvalCommand extends Command {
     }
 
     public async exec(message: Message, { code, noreturn }: { code: string, noreturn: boolean }): Promise<Message | Message[] | Promise<Message | Message[]>[]> {
-        const { client, lastResult } = this;
         let hrDiff;
         try {
             const hrStart = process.hrtime();
@@ -68,9 +67,9 @@ export default class EvalCommand extends Command {
             .replace(this.sensitivePattern, '--snip--');
         const split = inspected.split('\n');
         const last = inspected.length - 1;
-        const prependPart = inspected[0] !== '{' && inspected[0] !== '[' && inspected[0] !== "'" ? split[0] : inspected[0];
-		const appendPart = inspected[last] !== '}' && inspected[last] !== ']' && inspected[last] !== "'" ? split[split.length - 1] : inspected[last];
-		const prepend = `\`\`\`javascript\n${prependPart}\n`;
+        const prependPart = inspected[0] !== '{' && inspected[0] !== '[' && inspected[0] !== '\'' ? split[0] : inspected[0];
+        const appendPart = inspected[last] !== '}' && inspected[last] !== ']' && inspected[last] !== '\'' ? split[split.length - 1] : inspected[last];
+        const prepend = `\`\`\`javascript\n${prependPart}\n`;
         const append = `\n${appendPart}\n\`\`\``;
         if (input) {
             return Util.splitMessage(stripIndents`

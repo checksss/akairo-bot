@@ -44,7 +44,7 @@ export default class AuditLogChannelCommand extends Command {
     public async exec(message: Message, { method, channel }: { method: string, channel: TextChannel }): Promise<Message | Message[]> {
         if (method === 'get') {
             const auditLog: string | TextChannel = await this.client.settings.get('0', 'modLog', '');
-            if (auditLog === '' || !this.client.channels.has((auditLog as TextChannel).id)) return message.util!.send('No audit log text channel is set.');
+            if (auditLog === '' || !this.client.channels.cache.has((auditLog as TextChannel).id)) return message.util!.send('No audit log text channel is set.');
             return message.util!.send(`${this.client.user}'s audit log text channel is set to \`${(auditLog as TextChannel).name}\``);
         } else if (method === 'set') {
             await this.client.settings.set('0', 'modLog', channel.id);

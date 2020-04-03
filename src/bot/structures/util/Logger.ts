@@ -2,30 +2,39 @@ import chalk from 'chalk';
 import moment from 'moment';
 import util from 'util';
 
-export class Logger implements Logger {
-    public static log(content: any, { color = 'grey', tag = 'Log' }: LoggerParam = {}) {
-        this.write(content, { color, tag });
+const items: string[] = [];
+const format = '{ts}|{lt}: {txt}\n';
+
+export class Logger {
+    public static shared = new Logger();
+    public get last() {
+        return items;
     }
 
-    public static info(content: any, { color = 'green', tag = 'Info' }: LoggerParam = {}): void {
-        this.write(content, { color, tag });
+    public static log(content: any, { color, tag }: LoggerParam = { color: 'grey', tag: 'Log' }) {
+        Logger.write(` ${content}`, { color, tag });
     }
 
-    public static error(content: any, { color = 'red', tag = 'Error' }: LoggerParam = {}) {
-        this.write(content, { color, tag, error: true });
+    public static info(content: any, { color, tag }: LoggerParam = { color: 'green', tag: 'Info' }): void {
+        Logger.write(content, { color, tag });
     }
 
-    public static stacktrace(content: any, { color = 'red', tag = 'Error'}: LoggerParam = {}) {
-        this.write(content, { color, tag, error: true });
+    public static error(content: any, { color, tag }: LoggerParam = { color: 'red', tag: 'Error' }) {
+        Logger.write(content, { color, tag, error: true });
     }
 
-    public static write(content: any, { color = 'grey', tag = 'Log', error = false }: LoggerParam = {}) {
-        const timestamp = chalk.cyan(`[${moment().format('YYYY-MM-DD HH:mm:ss')}]:`);
-        const levelTag = chalk.bold(`[${tag}]:`);
-        // @ts-ignore
-        const text = chalk[color](this.clean(content));
+    public static write(content: any, { color, tag, error }: LoggerParam = { color: 'grey', tag: 'Log', error: false }) {
+        const timestamp = `[${moment().format('YYYY-MM-DD HH:mm:ss')}]`;
+        const levelTag = `[${tag}]`;
+        const text = Logger.clean(content);
         const stream = error ? process.stderr : process.stdout;
-        stream.write(`${timestamp} ${levelTag} ${text}\n`);
+        const item = format
+            .replace('{ts}', chalk.cyan(timestamp))
+            .replace('{lt}', chalk.bold(levelTag))
+            // @ts-ignore
+            .replace('{txt}', chalk[color](text));
+        items.push(item);
+        stream.write(item);
     }
 
     public static clean(item: any) {
@@ -35,14 +44,7 @@ export class Logger implements Logger {
     }
 }
 
-export interface Logger {
-    log(content: any, { color, tag }?: LoggerParam): void;
-    info(content: any, { color, tag }?: LoggerParam): void;
-    error(content: any, { color, tag }?: LoggerParam): void;
-    stacktrace(content: any, { color, tag }?: LoggerParam): void;
-}
-
-interface LoggerParam {
+export interface LoggerParam {
     color?: string | undefined;
     tag?: string | undefined;
     error?: boolean | undefined;

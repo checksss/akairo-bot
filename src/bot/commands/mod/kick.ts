@@ -61,11 +61,9 @@ export default class BanCommand extends Command {
         }
 
         try {
-            try {
-                await member.send(stripIndents`
-                    **You have been kicked from ${message.guild!.name}**
-                    ${reason ? `\n**Reason:** ${reason}\n` : ''}`);
-            } catch {}
+            await member.send(stripIndents`
+                **You have been kicked from ${message.guild!.name}**
+                ${reason ? `\n**Reason:** ${reason}\n` : ''}`).catch(this.client.logger.error);
             await member.kick(`Banned by ${mM!.user.tag}`);
         } catch (error) {
             return message.util!.reply(`something went wrong: \`${error}\`.`);
@@ -83,7 +81,7 @@ export default class BanCommand extends Command {
                 .setFooter('Member Banned')
                 .setTimestamp(Date.now());
 
-            await (message.guild!.channels.get(modLog)! as TextChannel).send(embed);
+            await (message.guild!.channels.cache.get(modLog)! as TextChannel).send(embed);
         }
 
         return msg.edit(`Successfully kicked **${member.user.tag}**`);

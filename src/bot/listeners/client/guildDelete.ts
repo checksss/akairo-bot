@@ -11,7 +11,7 @@ export default class GuildDeleteListener extends Listener {
     }
 
     public async exec(guild: Guild): Promise<Message | Message[] | void> {
-        const updateChannel = this.client.channels.get(await this.client.settings.get('global', 'modLog', ''));
+        const updateChannel = this.client.channels.cache.get(await this.client.settings.get('global', 'modLog', ''));
         const embed = new MessageEmbed()
             .setColor(this.client.constants.guildRemove)
             .setAuthor(guild.name, guild.iconURL()!)
@@ -19,11 +19,11 @@ export default class GuildDeleteListener extends Listener {
             .addField('Name', guild.name, true)
             .addField('Owner', guild.owner!.user.tag, true)
             .addField('Region', guild.region, true)
-            .addField('Channels', guild.channels.size, true)
-            .addField('Members', guild.members.size, true)
-            .addField('Humans', guild.members.filter(m => !m.user!.bot).size, true)
-            .addField('Bots', guild.members.filter(m => m.user!.bot).size, true)
-            .addBlankField(true)
+            .addField('Channels', guild.channels.cache.size, true)
+            .addField('Members', guild.members.cache.size, true)
+            .addField('Humans', guild.members.cache.filter(m => !m.user!.bot).size, true)
+            .addField('Bots', guild.members.cache.filter(m => m.user!.bot).size, true)
+            .addField('\u200D', '\u200D', true)
             .setFooter('Left Guild')
             .setTimestamp(Date.now());
 

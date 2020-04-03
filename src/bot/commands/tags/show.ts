@@ -1,6 +1,5 @@
 import { Command } from 'discord-akairo';
 import { Message, Util } from 'discord.js';
-import { Document } from 'mongoose';
 import { Tags } from '../../structures/models/Tags';
 
 export default class TagShowCommand extends Command {
@@ -30,10 +29,8 @@ export default class TagShowCommand extends Command {
         if (!name) return;
         name = Util.cleanContent(name, message);
 
-        try {
-            var tags = await Tags.find({ guild: message.guild!.id });
-            var tag = tags.filter(t => t.name === name || t.aliases.includes(name))[0];
-        } catch {}
+        var tags = await Tags.find({ guild: message.guild!.id });
+        var tag = tags.filter(t => t.name === name || t.aliases.includes(name))[0];
 
         // @ts-ignore
         if (!tag) return;

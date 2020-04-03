@@ -1,27 +1,25 @@
-import express, { Express, Request, RequestHandler, Response, NextFunction } from 'express';
+import express, { Express, Request, RequestHandler, Response } from 'express';
 import AkairoBotClient from '../../client/AkairoBotClient';
 
-import { Document, Model } from 'mongoose';
+import { Model } from 'mongoose';
 import { Stats } from '../models/Stats';
 import { Files } from '../models/Files';
 
 import favicon from 'serve-favicon';
 import fileType from 'file-type';
-import fetch from 'node-fetch';
 import { join } from 'path';
 
 export class Server implements StatsServer {
     public app: Express;
     public port: String | Number;
     public attachmentsBase: String;
-    private model: Model<Document>;
+    public model: typeof Model = Stats;
     private client: AkairoBotClient;
 
     public constructor(client: AkairoBotClient) {
         this.app = express();
         this.port = process.env.port || 80;
         this.attachmentsBase = `http://akairo.org${this.port === 80 ? '' : `:${this.port}`}/`;
-        this.model = Stats;
         this.client = client;
     }
 
@@ -33,7 +31,7 @@ export class Server implements StatsServer {
             const content = {
                 info: { guilds: stats.info.guilds, users: stats.info.users, channels: stats.info.channels },
                 client: { commands: stats.client.commands, listeners: stats.client.listeners, inhibitors: stats.client.inhibitors },
-                shards: stats.shards.map((s) => { return { id: s.id, status: s.status, ping: Math.round(s.ping) } } )
+                shards: stats.shards.map((s) => { return { id: s.id, status: s.status, ping: Math.round(s.ping) }; } )
             };
 
             res.json(content);
@@ -53,22 +51,19 @@ export class Server implements StatsServer {
             const content = {
                 info: { guilds: stat.info.guilds, users: stat.info.users, channels: stat.info.channels },
                 client: { commands: stat.client.commands, listeners: stat.client.listeners, inhibitors: stat.client.inhibitors },
-                shards: stat.shards.map((s) => { return { id: s.id, status: s.status, ping: Math.round(s.ping) } } )
+                shards: stat.shards.map((s) => { return { id: s.id, status: s.status, ping: Math.round(s.ping) }; } )
             };
             return res.status(200).json(content).end();
         });
 
-        this.app.get('/robots.txt', (req: Request, res: Response): any => {
+        this.app.get('/robots.txt', (_req: Request, res: Response): any => {
             res.status(200).send('Dashboard for Akairo Bot').end();
         });
 
-        this.app.all('/:id', async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+        this.app.all('/:id', async (req: Request, res: Response): Promise<any> => {
             const file = await Files.findOne({ id: req.params.id });
-            if (!file) {
-                const d = await fetch(`http://localhost:3000/id`).then(console.log);
-            }
 
-            const type = fileType(file!.data);
+            const type = await fileType.fromBuffer(file!.data);
             res.header('Content-Type', type!.mime);
             if (!type!.mime) res.header(`Content-Disposition: attachment; filename=${file!.filename}`);
             return res.status(200).send(file!.data).end();

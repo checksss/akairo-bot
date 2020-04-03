@@ -1,4 +1,4 @@
-import { Listener, PrefixSupplier } from 'discord-akairo';
+import { Listener } from 'discord-akairo';
 import { MessageEmbed, GuildMember, Message } from 'discord.js';
 import { stripIndents } from 'common-tags';
 
@@ -15,11 +15,11 @@ export default class GuildMemberAddListener extends Listener {
         let memberLog = await this.client.settings.get(member.guild, 'memberLog', undefined);
         const prefix = await this.client.settings.get(member.guild!, 'prefix', ';');
         if (!/(\d){18}/.test(memberLog)) return;
-        memberLog = member.guild.channels.get(memberLog);
+        memberLog = member.guild.channels.cache.get(memberLog);
 
         const clientPerms = memberLog.permissionsFor(this.client.user!);
-        if (!clientPerms!.has('SEND_MESSAGES') || !clientPerms!.has('EMBED_LINKS')) return member.guild.owner!.send(stripIndents
-            `I don\'t have permission to send messages/embeds in \`${member.guild.name}\`'s
+        if (!clientPerms!.has('SEND_MESSAGES') || !clientPerms!.has('EMBED_LINKS')) return member.guild.owner!.send(stripIndents`
+            I don\'t have permission to send messages/embeds in \`${member.guild.name}\`'s
             member log. You can turn off member logging by using \`${prefix}memberLog clear\`
             in any of \`${member.guild.name}\`'s text channels.`);
 

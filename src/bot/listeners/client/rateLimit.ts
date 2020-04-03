@@ -13,7 +13,7 @@ export default class RateLimitListener extends Listener {
     }
 
     public async exec(info: RateLimitData): Promise<void> {
-        this.client.logger.error(`Rate limit reached:`);
+        this.client.logger.error('Rate limit reached:');
         process.stderr.write(`${chalk.red(util.inspect(info, { depth: Infinity }))}`);
     }
 }

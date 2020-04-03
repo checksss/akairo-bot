@@ -1,8 +1,7 @@
 import { Command } from 'discord-akairo';
 import { Message, MessageEmbed, GuildChannel, DMChannel, TextChannel } from 'discord.js';
 import { stripIndents } from 'common-tags';
-import pascalCase from 'pascal-case';
-import * as moment from 'moment';
+import moment from 'moment';
 import 'moment-duration-format';
 
 export default class ChannelInfoCommand extends Command {
@@ -36,7 +35,7 @@ export default class ChannelInfoCommand extends Command {
             .addField(
                 '❯ Info',
                 stripIndents`
-                • Type: ${pascalCase(channel.type)}
+                • Type: ${channel.type}
 				• Topic: ${channel.topic ? channel.topic : 'None'}
 				• NSFW: ${channel.nsfw ? 'Yes' : 'No'}
 				• Creation Date: ${moment.utc(channel.createdAt).format('YYYY/MM/DD hh:mm:ss')}

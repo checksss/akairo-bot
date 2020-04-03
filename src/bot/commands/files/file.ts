@@ -14,11 +14,11 @@ export default class FileCommand extends Command {
 					Required: \`<>\` | Optional: \`[]\`
 					For additional \`<...arguments>\` usage refer to the examples below.
 				`,
-				usage: '<method> <...arguments>',
-				examples: [
+                usage: '<method> <...arguments>',
+                examples: [
                     'upload dog',
                     'delete dog'
-				],
+                ],
             },
             category: 'files',
             cooldown: 5000,

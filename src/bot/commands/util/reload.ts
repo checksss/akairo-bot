@@ -26,7 +26,7 @@ export default class ReloadCommand extends Command {
 
         this.client.settings.items = new Collection();
         await this.client.settings.init();
-        this.client.logger.log(`Settings provider reinitialized`);
+        this.client.logger.log('Settings provider reinitialized');
 
         message.util!.send('Sucessfully reloaded.').then((m: Message): void => {
             if (m.deletable && !m.deleted) m.delete({ timeout: 3000 });

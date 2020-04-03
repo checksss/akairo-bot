@@ -1,6 +1,5 @@
 import { Command } from 'discord-akairo';
 import { Message } from 'discord.js';
-import mongoose from 'mongoose';
 import { Tags } from '../../structures/models/Tags';
 
 export default class TagDeleteCommand extends Command {
@@ -31,7 +30,7 @@ export default class TagDeleteCommand extends Command {
         const moderators = await this.client.settings.get(message.guild!, 'moderators', [message.guild!.owner!.id]);
         if (tag.user !== message.author!.id && !moderators.includes(message.author!.id)) return message.util!.reply('you can only delete your own tags.');
         
-        await Tags.deleteOne(tag, (err): Promise<Message | Message[]> => {
+        await Tags.deleteOne(tag as object, (err: Error): Promise<Message | Message[]> => {
             if (err) return message.util!.reply('something went wrong');
             return message.util!.reply(`successfully deleted **${tag.name.substring(0, 1900)}**.`);
         });

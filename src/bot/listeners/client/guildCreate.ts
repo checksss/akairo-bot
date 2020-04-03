@@ -1,5 +1,5 @@
 import { Listener } from 'discord-akairo';
-import { Guild, GuildChannel, GuildMember, TextChannel, MessageEmbed, Message } from 'discord.js'
+import { Guild, GuildChannel, TextChannel, MessageEmbed, Message } from 'discord.js';
 import { Settings } from '../../structures/models/Settings';
 import { stripIndents } from 'common-tags';
 
@@ -17,11 +17,11 @@ export default class GuildCreateListener extends Listener {
             await this.client.settings.clear(guild);
             await Settings.deleteOne({ guild: guild.id });
         }
-        const guildGeneral: GuildChannel | undefined = guild.channels.filter(c => c.type === 'text').filter(c => {
+        const guildGeneral: GuildChannel | undefined = guild.channels.cache.filter(c => c.type === 'text').filter(c => {
             return c.name === 'general' || c.name === 'chat' || c.name === 'main';
         }).first();
 
-        const updateChannel = this.client.channels.get(await this.client.settings.get('global', 'modLog', ''));
+        const updateChannel = this.client.channels.cache.get(await this.client.settings.get('global', 'modLog', ''));
         const guildOwner = await this.client.users.fetch(guild.ownerID);
         const logEmbed = new MessageEmbed()
             .setColor(this.client.constants.guildAdd)
@@ -30,11 +30,11 @@ export default class GuildCreateListener extends Listener {
             .addField('Name', guild.name, true)
             .addField('Owner', guildOwner.tag, true)
             .addField('Region', guild.region, true)
-            .addField('Channels', guild.channels.size, true)
-            .addField('Members', guild.members.size, true)
-            .addField('Humans', `~${guild.members.filter(m => !m.user!.bot).size}`, true)
-            .addField('Bots', `~${guild.members.filter(m => m.user!.bot).size}`, true)
-            .addBlankField(true)
+            .addField('Channels', guild.channels.cache.size, true)
+            .addField('Members', guild.members.cache.size, true)
+            .addField('Humans', `~${guild.members.cache.filter(m => !m.user!.bot).size}`, true)
+            .addField('Bots', `~${guild.members.cache.filter(m => m.user!.bot).size}`, true)
+            .addField('​', '​', true)
             .setFooter('Joined Guild')
             .setTimestamp(Date.now());
 
@@ -63,11 +63,11 @@ export default class GuildCreateListener extends Listener {
 
             if (guildGeneral) {
                 embed.setTitle('Main Text Channel Set')
-                embed.setDescription(stripIndents`
+                    .setDescription(stripIndents`
                     ${guildGeneral} has been set as the guild's
                     main text channel. If this is incorrect,
                     please use \`${process.env.prefix}main set\` in \`${guild.name}\`.`)
-                embed.setFooter('Main Channel Set');
+                    .setFooter('Main Channel Set');
             } else {
                 embed.setTitle('Can\'t find main text channel');
                 embed.setDescription(stripIndents`

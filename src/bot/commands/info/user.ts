@@ -35,19 +35,19 @@ export default class UserInfoCommand extends Command {
             .setDescription(`Info about **${user.tag}** (ID: ${member.id})`)
             .addField(
                 '❯ Member Details',
-				stripIndents`
+                stripIndents`
 				${member.nickname == undefined ? '• No nickname' : ` • Nickname: ${member.nickname}`}
-				• Roles: ${member.roles.map((roles): string => `\`${roles.name}\``).join(' ')}
+				• Roles: ${member.roles.cache.map((roles): string => `\`${roles.name}\``).join(' ')}
 				• Joined at: ${moment.utc(member.joinedAt!).format('YYYY/MM/DD hh:mm:ss')}
             `)
             .addField(
                 '❯ User Details',
-				stripIndents`
+                stripIndents`
 				• ID: ${member.id}
 				• Username: ${member.user.tag}
 				• Created at: ${moment.utc(user.createdAt).format('YYYY/MM/DD hh:mm:ss')}${user.bot ? '\n• Bot account' : ''}
 				• Status: ${user.presence.status.toUpperCase()}
-				• Activity: ${user.presence.activity ? user.presence.activity.name : 'None'}
+				• Activity: ${user.presence.activities[0] ? user.presence.activities[0].name : 'None'}
             `)
             .setThumbnail(user.displayAvatarURL());
 

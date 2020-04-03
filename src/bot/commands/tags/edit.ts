@@ -1,7 +1,6 @@
 import { Command } from 'discord-akairo';
 import { Message, Util } from 'discord.js';
-import * as moment from 'moment';
-import { Tags } from '../../structures/models/Tags';
+import moment from 'moment';
 
 export default class TagEditCommand extends Command {
     public constructor() {
@@ -40,7 +39,7 @@ export default class TagEditCommand extends Command {
         if (tag.user !== message.author!.id && !moderators.includes(message.author!.id))
             return message.util!.reply('you can only edit your own tags.');
         if (content && content.length > 1950) 
-            return message.util!.reply('messages have a 2000-character limit.')
+            return message.util!.reply('messages have a 2000-character limit.');
 
         if (typeof content === 'string') {
             content = Util.cleanContent(content, message);

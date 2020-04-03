@@ -32,7 +32,7 @@ export default class ToggleCommand extends Command {
                     That method doesn't exist on toggle.
                     Try using \`${prefix} help toggle\` for help.`;
             }
-        }
+        };
 
         return Flag.continue(method);
     }

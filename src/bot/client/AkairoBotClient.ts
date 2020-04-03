@@ -1,11 +1,7 @@
 import { AkairoClient, CommandHandler, InhibitorHandler, ListenerHandler, Flag, } from 'discord-akairo';
 import { Message, Util, Collection, ColorResolvable, } from 'discord.js';
 
-import Node from 'lavaqueue';
-import Storage, { ReferenceType } from 'rejects';
-import { ExtendedRedis } from 'lavaqueue/typings/QueueStore';
-
-import mongoose, { Model, Document, } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { SettingsProvider, } from '../structures/providers';
 import { Files, Stats, Tags, } from '../structures/models';
 import { Logger, Server, Utils, } from '../structures/util';
@@ -13,24 +9,19 @@ import { Logger, Server, Utils, } from '../structures/util';
 import { join } from 'path';
 import { createInterface, ReadLine } from 'readline';
 import 'dotenv/config';
-import { AnyTxtRecord } from 'dns';
 
 declare module 'discord-akairo' {
     interface AkairoClient {
-        audioStorage: any,
         cache: Collection<string, Message>,
         commandHandler: CommandHandler,
         config: AkairoBotOptions,
         constants: ClientConstants,
         inhibitorHandler: InhibitorHandler,
         listenerHandler: ListenerHandler,
-        logger: Logger,
-        music: Node,
-        redis: ExtendedRedis,
+        logger: typeof Logger,
         server: Server,
         settings: SettingsProvider,
-        stats: Model<Document>,
-        storage: Storage,
+        stats: typeof Model,
         utils: ClientUtils,
     }
 }
@@ -69,8 +60,8 @@ export default class AkairoBotClient extends AkairoClient {
         defaultCooldown: 3000,
         argumentDefaults: {
             prompt: {
-                modifyStart: (_, str): string => `${str}\nType \`cancel\` to cancel the command.`,
-                modifyRetry: (_, str): string => `${str}\nType \`cancel\` to cancel the command.`,
+                modifyStart: (_: any, str: string): string => `${str}\nType \`cancel\` to cancel the command.`,
+                modifyRetry: (_: any, str: string): string => `${str}\nType \`cancel\` to cancel the command.`,
                 timeout: 'Error: Command timed out',
                 ended: 'Error: Too many attemps',
                 cancel: 'Command cancelled',
@@ -93,7 +84,7 @@ export default class AkairoBotClient extends AkairoClient {
 
     public cache: Collection<string, Message>;
 
-    public logger: Logger;
+    public logger: typeof Logger;
 
     public constants: ClientConstants;
 
@@ -103,8 +94,9 @@ export default class AkairoBotClient extends AkairoClient {
 
     public constructor(config: AkairoBotOptions) {
         super({ ownerID: config.owner }, {
-            messageCacheMaxSize: 1000,
-            disableEveryone: true,
+            fetchAllMembers: true,
+            messageCacheMaxSize: 10e3,
+            messageCacheLifetime: 3600,
             shardCount: 2
         });
 
@@ -112,11 +104,8 @@ export default class AkairoBotClient extends AkairoClient {
             if (!phrase) return Flag.fail(phrase);
             phrase = Util.cleanContent(phrase.toLowerCase(), message);
 
-            let tag; 
-            try {
-                tag = await Tags.findOne({ guild: message.guild!.id, name: phrase });
-                if (!tag) tag = await Tags.findOne({ guild: message.guild!.id, aliases: phrase });
-            } catch {}
+            let tag = await Tags.findOne({ guild: message.guild!.id, name: phrase });
+            if (!tag) tag = await Tags.findOne({ guild: message.guild!.id, aliases: phrase });
 
             return tag || Flag.fail(phrase);
         });
@@ -124,11 +113,8 @@ export default class AkairoBotClient extends AkairoClient {
         this.commandHandler.resolver.addType('existingTag', async (message, phrase): Promise<any> => {
             if (!phrase) return Flag.fail(phrase);
             phrase = Util.cleanContent(phrase, message);
-            let tag;
-            try {
-                tag = await Tags.findOne({ guild: message.guild!.id, name: phrase });
-                if (!tag) tag = await Tags.findOne({ guild: message.guild!.id, aliases: phrase });
-            } catch {}
+            let tag = await Tags.findOne({ guild: message.guild!.id, name: phrase });
+            if (!tag) tag = await Tags.findOne({ guild: message.guild!.id, aliases: phrase });
 
             return tag ? Flag.fail(phrase) : phrase;
         });
@@ -141,7 +127,7 @@ export default class AkairoBotClient extends AkairoClient {
             return phrase || Flag.fail(phrase);
         });
 
-        this.commandHandler.resolver.addType('filename', async (message, phrase): Promise<any> => {
+        this.commandHandler.resolver.addType('filename', async (_message, phrase): Promise<any> => {
             if (!phrase) phrase = '';
             const exists = await Files.countDocuments({ id: phrase }).then((c: number) => c > 0);
             if (exists) return Flag.fail(phrase);
@@ -165,7 +151,7 @@ export default class AkairoBotClient extends AkairoClient {
             downloadEmoji: '627646871954784257',
             shardOnlineEmoji: '628783920665853972',
             shardOfflineEmoji: '628784077025050650',
-        }
+        };
 
         this.utils = Utils;
 
@@ -187,7 +173,7 @@ export default class AkairoBotClient extends AkairoClient {
         this.commandHandler.loadAll();
         this.logger.log(`Commands loaded: ${this.commandHandler.modules.size}`);
         this.inhibitorHandler.loadAll();
-        this.logger.log(`Inhibitors loaded: ${this.inhibitorHandler.modules.size}`)
+        this.logger.log(`Inhibitors loaded: ${this.inhibitorHandler.modules.size}`);
         this.listenerHandler.loadAll();
         this.logger.log(`Listeners loaded: ${this.listenerHandler.modules.size}`);
 
@@ -199,17 +185,17 @@ export default class AkairoBotClient extends AkairoClient {
         this.server.init();
         
         this.on('shardReady', (id: number) => this.logger.info(`Shard ${id} ready`));
-        this.on('shardDisconnect', (event, id: number) => this.logger.error(`Shard ${id} disconnected`));
+        this.on('shardDisconnect', (_event, id: number) => this.logger.error(`Shard ${id} disconnected`));
         this.on('shardError', (error: Error, id: number) => this.logger.error(`Shard ${id} error: ${error.stack}`));
 
         this.setInterval(() => {
-            if (this.ws.shards.every(s => s.ping === NaN) || this.uptime === null) return;
+            if (this.ws.shards.every(s => isNaN(s.ping)) || this.uptime === null) return;
             
             return Stats.create({
                 date: Date.now(),
-                info: { guilds: this.guilds.size, users: this.guilds.reduce((a, b) => a + b.memberCount, 0), channels: this.channels.size },
+                info: { guilds: this.guilds.cache.size, users: this.guilds.cache.reduce((a, b) => a + b.memberCount, 0), channels: this.channels.cache.size },
                 client: { commands: this.commandHandler.modules.size, listeners: this.listenerHandler.modules.size, inhibitors: this.inhibitorHandler.modules.size },
-                shards: this.ws.shards.map(s => { return { id: s.id, status: s.status, ping: Math.round(s.ping) } } )
+                shards: this.ws.shards.map(s => { return { id: s.id, status: s.status, ping: Math.round(s.ping) }; } )
             });
         }, 6e4);
 
@@ -230,7 +216,7 @@ export default class AkairoBotClient extends AkairoClient {
 
             this.logger.log('MongoDB connected');
         } catch (e) {
-            this.logger.error(`Failed to connect to MongoDB`);
+            this.logger.error('Failed to connect to MongoDB');
             this.logger.error(e);
             return process.exit();
         }

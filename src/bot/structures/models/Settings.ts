@@ -1,5 +1,4 @@
 import { Document, Schema, model } from 'mongoose';
-import { GuildMember } from 'discord.js';
 
 export interface Settings extends Document {
     id: string,

@@ -10,11 +10,11 @@ interface HumanLevels {
 
 const HUMAN_LEVELS: HumanLevels = {
     0: 'None',
-	1: 'Low',
-	2: 'Medium',
-	3: '(╯°□°）╯︵ ┻━┻',
-	4: '┻━┻ ﾐヽ(ಠ益ಠ)ノ彡┻━┻'
-}
+    1: 'Low',
+    2: 'Medium',
+    3: '(╯°□°）╯︵ ┻━┻',
+    4: '┻━┻ ﾐヽ(ಠ益ಠ)ノ彡┻━┻'
+};
 
 export default class ServerInfoCommand extends Command {
     public constructor() {
@@ -38,7 +38,7 @@ export default class ServerInfoCommand extends Command {
             .addField(
                 '❯ Channels',
                 stripIndents`
-                • ${message.guild!.channels.filter((ch): boolean => ch.type === 'text').size} Text, ${message.guild!.channels.filter((ch): boolean => ch.type === 'voice').size} Voice
+                • ${message.guild!.channels.cache.filter((ch): boolean => ch.type === 'text').size} Text, ${message.guild!.channels.cache.filter((ch): boolean => ch.type === 'voice').size} Voice
                 • AFK: ${message.guild!.afkChannelID ? `<#${message.guild!.afkChannelID}> after ${message.guild!.afkTimeout / 60}min` : 'None'}
             `)
             .addField(
@@ -50,10 +50,10 @@ export default class ServerInfoCommand extends Command {
             .addField(
                 '❯ Other',
                 stripIndents`
-                • Roles: ${message.guild!.roles.size}
+                • Roles: ${message.guild!.roles.cache.size}
                 • Region: ${message.guild!.region}
                 • Created at: ${moment.utc(message.guild!.createdAt).format('YYYY/MM/DD hh:mm:ss')}
-                • Verification Level: ${HUMAN_LEVELS[message.guild!.verificationLevel]}
+                • Verification Level: ${HUMAN_LEVELS[message.guild!.verificationLevel as unknown as number]}
             `)
             .setThumbnail(message.guild!.iconURL()!);
 

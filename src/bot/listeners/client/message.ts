@@ -18,7 +18,7 @@ export default class MessageListener extends Listener {
             if (!reactionDownloading || message.attachments.size < 1) return;
             if (message.attachments.first()!.size > 2 * 1024 * 1024) return;
 
-            const emoji = this.client.emojis.get(this.client.constants.downloadEmoji);
+            const emoji = this.client.emojis.cache.get(this.client.constants.downloadEmoji);
             if (!emoji) return;
             message.react(emoji);
         }

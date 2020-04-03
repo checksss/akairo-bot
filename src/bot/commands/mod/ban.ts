@@ -38,7 +38,7 @@ export default class BanCommand extends Command {
     public async exec(message: Message, { member, reason }: { member: GuildMember, reason: string }): Promise<Message | Message[]> {
         const guildOwner = await this.client.users.fetch(message.guild!.ownerID);
         const moderators: string[] = await this.client.settings.get(message.guild!, 'moderators', [guildOwner.id]);
-        const cM = await message.guild!.members.fetch(this.client.user!.id); // The client's member
+        const cM = await message.guild!.me!; // The client's member
         const mM = await message.guild!.members.fetch(message.author!.id); // The message author's
 
         if (!cM.permissions.has('BAN_MEMBERS')) return message.util!.reply('I\'m not allowed to ban members.');
@@ -61,13 +61,11 @@ export default class BanCommand extends Command {
         }
 
         try {
-            try {
-                await member.send(stripIndents`
-                    **You have been banned from ${message.guild!.name}**
-                    ${reason ? `\n**Reason:** ${reason}\n` : ''}
-                    You can appeal your ban by DMing \`${guildOwner.tag}\``);
-            } catch {}
-            await member.ban({ reason: `Banned by ${mM!.user.tag}` });
+            await member.send(stripIndents`
+                **You have been banned from ${message.guild!.name}**
+                ${reason ? `\n**Reason:** ${reason}\n` : ''}
+                You can appeal your ban by DMing \`${guildOwner.tag}\``).catch(this.client.logger.error);
+            await member.ban({ reason: `Banned by ${mM!.user.tag}` }).catch(this.client.logger.error);
         } catch {
             try {
                 await message.guild!.members.ban(member.id, { reason: `Banned by ${message.author!.tag}` });
@@ -88,7 +86,7 @@ export default class BanCommand extends Command {
                 .setFooter('Member Banned')
                 .setTimestamp(Date.now());
 
-            await (message.guild!.channels.get(modLog)! as TextChannel).send(embed);
+            await (message.guild!.channels.cache.get(modLog)! as TextChannel).send(embed);
         }
 
         return msg.edit(`Successfully banned **${member.user.tag}**`);

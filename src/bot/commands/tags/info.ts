@@ -1,8 +1,7 @@
 import { Command } from 'discord-akairo';
 import { Message, MessageEmbed } from 'discord.js';
-import * as moment from 'moment';
+import moment from 'moment';
 import 'moment-duration-format';
-import { Tags } from '../../structures/models/Tags';
 
 export default class TagInfoCommand extends Command {
     public constructor() {
@@ -38,18 +37,18 @@ export default class TagInfoCommand extends Command {
             lastModifiedBy = null;
         }
 
-        const guild = this.client.guilds.get(tag.guild);
+        const guild = this.client.guilds.cache.get(tag.guild);
         const embed = new MessageEmbed()
             .setColor(this.client.constants.infoEmbed)
             .addField('❯ Name', tag.name)
-			.addField('❯ User', user ? `${user.tag} (ID: ${user.id})` : "Couldn't fetch user.")
-			.addField('❯ Guild', guild ? `${guild.name}` : "Couldn't fetch guild.")
-			.addField('❯ Aliases', tag.aliases.length ? tag.aliases.map(t => `\`${t}\``).sort().join(', ') : 'No aliases.')
-			.addField('❯ Uses', tag.uses)
-			.addField('❯ Created at', moment.utc(tag.createdAt).format('YYYY/MM/DD hh:mm:ss'))
+            .addField('❯ User', user ? `${user.tag} (ID: ${user.id})` : 'Couldn\'t fetch user.')
+            .addField('❯ Guild', guild ? `${guild.name}` : 'Couldn\'t fetch guild.')
+            .addField('❯ Aliases', tag.aliases.length ? tag.aliases.map(t => `\`${t}\``).sort().join(', ') : 'No aliases.')
+            .addField('❯ Uses', tag.uses)
+            .addField('❯ Created at', moment.utc(tag.createdAt).format('YYYY/MM/DD hh:mm:ss'))
             .addField('❯ Modified at', moment.utc(tag.updatedAt).format('YYYY/MM/DD hh:mm:ss'));
         if (lastModifiedBy) {
-            embed.addField('❯ Last modified by', lastModifiedBy ? `${lastModifiedBy.tag} (ID: ${lastModifiedBy.id})` : "Couldn't fetch user.");
+            embed.addField('❯ Last modified by', lastModifiedBy ? `${lastModifiedBy.tag} (ID: ${lastModifiedBy.id})` : 'Couldn\'t fetch user.');
         }
 
         return message.util!.send(embed);
