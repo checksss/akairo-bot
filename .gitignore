@@ -4,7 +4,10 @@ node_modules/
 # Config
 .env
 .eslintrc.json
+.gitignore
 
 # Misc
 *.code-workspace
 TODO
+.DS_STORE
+build/
