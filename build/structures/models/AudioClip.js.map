@@ -1,1 +1,0 @@
-{"version":3,"file":"AudioClip.js","sourceRoot":"","sources":["../../../src/bot/structures/models/AudioClip.ts"],"names":[],"mappings":";;AAAA,uCAAmD;AASnD,MAAM,cAAc,GAAG,IAAI,iBAAM,CAAC;IAC9B,IAAI,EAAE,MAAM;IACZ,KAAK,EAAE,MAAM;IACb,IAAI,EAAE,MAAM;IACZ,IAAI,EAAE,MAAM;CACf,CAAC,CAAC;AAEU,QAAA,UAAU,GAAG,gBAAK,CAAY,YAAY,EAAE,cAAc,CAAC,CAAC"}
