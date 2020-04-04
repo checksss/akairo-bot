@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
 const express_1 = tslib_1.__importDefault(require("express"));
-const Stats_1 = require("../models/Stats");
-const Files_1 = require("../models/Files");
+const Stats_1 = require("../entities/Stats");
+const Files_1 = require("../entities/Files");
 const serve_favicon_1 = tslib_1.__importDefault(require("serve-favicon"));
 const file_type_1 = tslib_1.__importDefault(require("file-type"));
 const path_1 = require("path");

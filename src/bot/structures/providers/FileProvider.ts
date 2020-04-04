@@ -1,6 +1,6 @@
 import { Collection } from 'discord.js';
 import { Document, Model, Query } from 'mongoose';
-import { Files } from '../models/Files';
+import { Files } from '../entities/Files';
 
 export class FileProvider {
     public model: Model<Document>;

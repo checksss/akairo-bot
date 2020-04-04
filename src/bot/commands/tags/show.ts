@@ -1,6 +1,6 @@
 import { Command } from 'discord-akairo';
 import { Message, Util } from 'discord.js';
-import { Tags } from '../../structures/models/Tags';
+import { Tags } from '../../structures/entities/Tags';
 
 export default class TagShowCommand extends Command {
     public constructor() {

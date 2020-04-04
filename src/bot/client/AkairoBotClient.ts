@@ -1,9 +1,10 @@
 import { AkairoClient, CommandHandler, InhibitorHandler, ListenerHandler, Flag, } from 'discord-akairo';
 import { Message, Util, Collection, ColorResolvable, } from 'discord.js';
 
+import { createConnection } from 'typeorm';
 import mongoose, { Model } from 'mongoose';
 import { SettingsProvider, } from '../structures/providers';
-import { Files, Stats, Tags, } from '../structures/models';
+import { Settings, Files, Stats, Tags, } from '../structures/entities';
 import { Logger, Server, Utils, } from '../structures/util';
 
 import { join } from 'path';
@@ -52,7 +53,7 @@ export default class AkairoBotClient extends AkairoClient {
 
     public commandHandler: CommandHandler = new CommandHandler(this, {
         directory: join(__dirname, '..', 'commands'),
-        prefix: async (message: Message): Promise<string> => await this.settings.get(message.guild!, 'prefix', process.env.prefix),
+        prefix: async (message: Message): Promise<string> => await this.settings.get(message.guild!, 'general.prefix', process.env.prefix ?? ';'),
         allowMention: true,
         handleEdits: true,
         commandUtil: true,
@@ -214,7 +215,21 @@ export default class AkairoBotClient extends AkairoClient {
                 useUnifiedTopology: true
             });
 
-            this.logger.log('MongoDB connected');
+            await createConnection({
+                name: 'default',
+                type: 'postgres',
+                host: 'localhost',
+                username: 'postgres',
+                password: process.env.pgpassword,
+                database: 'postgres',
+                port: 5432,
+                entities: [Settings]
+            }).catch(() => {
+                Logger.error('Couldn\'t connect to database');
+                process.exit(1);
+            });
+
+            this.logger.log('Postgres connected');
         } catch (e) {
             this.logger.error('Failed to connect to MongoDB');
             this.logger.error(e);

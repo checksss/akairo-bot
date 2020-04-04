@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
 const discord_akairo_1 = require("discord-akairo");
-const Files_1 = require("../../structures/models/Files");
+const Files_1 = require("../../structures/entities/Files");
 const randomstring_1 = require("randomstring");
 const node_fetch_1 = tslib_1.__importDefault(require("node-fetch"));
 class UploadCommand extends discord_akairo_1.Command {

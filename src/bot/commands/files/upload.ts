@@ -1,6 +1,6 @@
 import { Command } from 'discord-akairo';
 import { Message } from 'discord.js';
-import { Files } from '../../structures/models/Files';
+import { Files } from '../../structures/entities/Files';
 
 import { generate } from 'randomstring';
 import fetch from 'node-fetch';

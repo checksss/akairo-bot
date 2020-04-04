@@ -1,6 +1,6 @@
 import { Listener } from 'discord-akairo';
-import { Guild, GuildChannel, TextChannel, MessageEmbed, Message } from 'discord.js';
-import { Settings } from '../../structures/models/Settings';
+import { Guild, TextChannel, MessageEmbed, Message } from 'discord.js';
+import { SettingsData } from '../../structures/entities/Settings';
 import { stripIndents } from 'common-tags';
 
 export default class GuildCreateListener extends Listener {
@@ -13,11 +13,11 @@ export default class GuildCreateListener extends Listener {
     }
 
     public async exec(guild: Guild): Promise<void> {
+        return this.client.settings.guild(guild, {});
         if (this.client.settings.items.has(guild.id)) {
             await this.client.settings.clear(guild);
-            await Settings.deleteOne({ guild: guild.id });
         }
-        const guildGeneral: GuildChannel | undefined = guild.channels.cache.filter(c => c.type === 'text').filter(c => {
+        const guildGeneral = guild.channels.cache.filter(c => c.type === 'text').filter(c => {
             return c.name === 'general' || c.name === 'chat' || c.name === 'main';
         }).first();
 
@@ -38,22 +38,12 @@ export default class GuildCreateListener extends Listener {
             .setFooter('Joined Guild')
             .setTimestamp(Date.now());
 
-        if (updateChannel && updateChannel.type === 'text') (updateChannel as TextChannel).send(logEmbed);
+        if (updateChannel && updateChannel!.type === 'text') (updateChannel as TextChannel).send(logEmbed);
         
 
-        await Settings.create({
-            id: guild.id,
-            name: guild.name,
-            prefix: process.env.prefix,
-            filterProfanity: false,
-            mainChannel: guildGeneral ? guildGeneral.id : '',
-            memberLog: '',
-            modLog: '',
-            tokenFiltering: true,
-            reactionDownloading: false,
-            blacklist: [],
-            moderators: [guildOwner.id]
-        }, (err: any): Promise<Message> => {
+        await this.client.settings.create(guild, {
+
+        }).catch((err: any): Promise<Message> => {
             if (err) this.client.logger.error(`Settings for ${guild.name} (${guild.id}) - ${guild.owner!.user.tag} couldn't be created`);
 
             const embed = new MessageEmbed()

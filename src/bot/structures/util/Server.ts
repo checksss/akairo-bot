@@ -2,8 +2,8 @@ import express, { Express, Request, RequestHandler, Response } from 'express';
 import AkairoBotClient from '../../client/AkairoBotClient';
 
 import { Model } from 'mongoose';
-import { Stats } from '../models/Stats';
-import { Files } from '../models/Files';
+import { Stats } from '../entities/Stats';
+import { Files } from '../entities/Files';
 
 import favicon from 'serve-favicon';
 import fileType from 'file-type';

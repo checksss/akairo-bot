@@ -1,7 +1,7 @@
 import { Command } from 'discord-akairo';
 import { Message, MessageEmbed } from 'discord.js';
 import { stripIndents } from 'common-tags';
-import { Files } from '../../structures/models/Files';
+import { Files } from '../../structures/entities/Files';
 
 export default class FileCommand extends Command {
     public constructor() {

@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const discord_akairo_1 = require("discord-akairo");
 const discord_js_1 = require("discord.js");
 const common_tags_1 = require("common-tags");
-const Files_1 = require("../../structures/models/Files");
+const Files_1 = require("../../structures/entities/Files");
 class FileCommand extends discord_akairo_1.Command {
     constructor() {
         super('file', {

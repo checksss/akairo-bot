@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_akairo_1 = require("discord-akairo");
 const discord_js_1 = require("discord.js");
-const Settings_1 = require("../../structures/models/Settings");
 const common_tags_1 = require("common-tags");
 class GuildCreateListener extends discord_akairo_1.Listener {
     constructor() {
@@ -13,9 +12,9 @@ class GuildCreateListener extends discord_akairo_1.Listener {
         });
     }
     async exec(guild) {
+        return this.client.settings.guild(guild, {});
         if (this.client.settings.items.has(guild.id)) {
             await this.client.settings.clear(guild);
-            await Settings_1.Settings.deleteOne({ guild: guild.id });
         }
         const guildGeneral = guild.channels.cache.filter(c => c.type === 'text').filter(c => {
             return c.name === 'general' || c.name === 'chat' || c.name === 'main';
@@ -38,19 +37,7 @@ class GuildCreateListener extends discord_akairo_1.Listener {
             .setTimestamp(Date.now());
         if (updateChannel && updateChannel.type === 'text')
             updateChannel.send(logEmbed);
-        await Settings_1.Settings.create({
-            id: guild.id,
-            name: guild.name,
-            prefix: process.env.prefix,
-            filterProfanity: false,
-            mainChannel: guildGeneral ? guildGeneral.id : '',
-            memberLog: '',
-            modLog: '',
-            tokenFiltering: true,
-            reactionDownloading: false,
-            blacklist: [],
-            moderators: [guildOwner.id]
-        }, (err) => {
+        await this.client.settings.create(guild, {}).catch((err) => {
             if (err)
                 this.client.logger.error(`Settings for ${guild.name} (${guild.id}) - ${guild.owner.user.tag} couldn't be created`);
             const embed = new discord_js_1.MessageEmbed()

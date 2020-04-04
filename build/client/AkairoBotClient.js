@@ -3,9 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
 const discord_akairo_1 = require("discord-akairo");
 const discord_js_1 = require("discord.js");
+const typeorm_1 = require("typeorm");
 const mongoose_1 = tslib_1.__importDefault(require("mongoose"));
 const providers_1 = require("../structures/providers");
-const models_1 = require("../structures/models");
+const entities_1 = require("../structures/entities");
 const util_1 = require("../structures/util");
 const path_1 = require("path");
 const readline_1 = require("readline");
@@ -20,7 +21,7 @@ class AkairoBotClient extends discord_akairo_1.AkairoClient {
         });
         this.commandHandler = new discord_akairo_1.CommandHandler(this, {
             directory: path_1.join(__dirname, '..', 'commands'),
-            prefix: async (message) => await this.settings.get(message.guild, 'prefix', process.env.prefix),
+            prefix: async (message) => await this.settings.get(message.guild, 'general.prefix', process.env.prefix ?? ';'),
             allowMention: true,
             handleEdits: true,
             commandUtil: true,
@@ -49,18 +50,18 @@ class AkairoBotClient extends discord_akairo_1.AkairoClient {
             if (!phrase)
                 return discord_akairo_1.Flag.fail(phrase);
             phrase = discord_js_1.Util.cleanContent(phrase.toLowerCase(), message);
-            let tag = await models_1.Tags.findOne({ guild: message.guild.id, name: phrase });
+            let tag = await entities_1.Tags.findOne({ guild: message.guild.id, name: phrase });
             if (!tag)
-                tag = await models_1.Tags.findOne({ guild: message.guild.id, aliases: phrase });
+                tag = await entities_1.Tags.findOne({ guild: message.guild.id, aliases: phrase });
             return tag || discord_akairo_1.Flag.fail(phrase);
         });
         this.commandHandler.resolver.addType('existingTag', async (message, phrase) => {
             if (!phrase)
                 return discord_akairo_1.Flag.fail(phrase);
             phrase = discord_js_1.Util.cleanContent(phrase, message);
-            let tag = await models_1.Tags.findOne({ guild: message.guild.id, name: phrase });
+            let tag = await entities_1.Tags.findOne({ guild: message.guild.id, name: phrase });
             if (!tag)
-                tag = await models_1.Tags.findOne({ guild: message.guild.id, aliases: phrase });
+                tag = await entities_1.Tags.findOne({ guild: message.guild.id, aliases: phrase });
             return tag ? discord_akairo_1.Flag.fail(phrase) : phrase;
         });
         this.commandHandler.resolver.addType('tagContent', async (message, phrase) => {
@@ -74,7 +75,7 @@ class AkairoBotClient extends discord_akairo_1.AkairoClient {
         this.commandHandler.resolver.addType('filename', async (_message, phrase) => {
             if (!phrase)
                 phrase = '';
-            const exists = await models_1.Files.countDocuments({ id: phrase }).then((c) => c > 0);
+            const exists = await entities_1.Files.countDocuments({ id: phrase }).then((c) => c > 0);
             if (exists)
                 return discord_akairo_1.Flag.fail(phrase);
             return phrase;
@@ -124,7 +125,7 @@ class AkairoBotClient extends discord_akairo_1.AkairoClient {
         this.setInterval(() => {
             if (this.ws.shards.every(s => isNaN(s.ping)) || this.uptime === null)
                 return;
-            return models_1.Stats.create({
+            return entities_1.Stats.create({
                 date: Date.now(),
                 info: { guilds: this.guilds.cache.size, users: this.guilds.cache.reduce((a, b) => a + b.memberCount, 0), channels: this.channels.cache.size },
                 client: { commands: this.commandHandler.modules.size, listeners: this.listenerHandler.modules.size, inhibitors: this.inhibitorHandler.modules.size },
@@ -142,7 +143,20 @@ class AkairoBotClient extends discord_akairo_1.AkairoClient {
                 useFindAndModify: false,
                 useUnifiedTopology: true
             });
-            this.logger.log('MongoDB connected');
+            await typeorm_1.createConnection({
+                name: 'default',
+                type: 'postgres',
+                host: 'localhost',
+                username: 'postgres',
+                password: process.env.pgpassword,
+                database: 'postgres',
+                port: 5432,
+                entities: [entities_1.Settings]
+            }).catch(() => {
+                util_1.Logger.error('Couldn\'t connect to database');
+                process.exit(1);
+            });
+            this.logger.log('Postgres connected');
         }
         catch (e) {
             this.logger.error('Failed to connect to MongoDB');

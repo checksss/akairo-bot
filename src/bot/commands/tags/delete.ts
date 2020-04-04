@@ -1,6 +1,6 @@
 import { Command } from 'discord-akairo';
 import { Message } from 'discord.js';
-import { Tags } from '../../structures/models/Tags';
+import { Tags } from '../../structures/entities/Tags';
 
 export default class TagDeleteCommand extends Command {
     public constructor() {

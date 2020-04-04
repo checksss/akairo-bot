@@ -1,6 +1,6 @@
 import { Command } from 'discord-akairo';
 import { Message, GuildMember } from 'discord.js';
-import { Tags, Tag } from '../../structures/models/Tags';
+import { Tags, Tag } from '../../structures/entities/Tags';
 
 export default class TagDownloadCommand extends Command {
     public constructor() {

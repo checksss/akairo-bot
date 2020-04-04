@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_akairo_1 = require("discord-akairo");
-const Tags_1 = require("../../structures/models/Tags");
+const Tags_1 = require("../../structures/entities/Tags");
 class TagAddCommand extends discord_akairo_1.Command {
     constructor() {
         super('tag-add', {

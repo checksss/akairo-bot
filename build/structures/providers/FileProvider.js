@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
-const Files_1 = require("../models/Files");
+const Files_1 = require("../entities/Files");
 class FileProvider {
     constructor() {
         this.model = Files_1.Files;
